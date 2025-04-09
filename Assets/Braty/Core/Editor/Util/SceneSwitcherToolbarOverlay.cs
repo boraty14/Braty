@@ -25,6 +25,10 @@ public static class EditorSceneSwitcher
         // clear scenes 
         ScenePaths.Clear();
 
+        if (!AssetDatabase.IsValidFolder(Path.Combine("Assets", "Game", "Scenes")))
+        {
+            return;
+        }
         var sceneGuids = AssetDatabase.FindAssets("t:Scene", new[] {Path.Combine("Assets","Game","Scenes")});
 
         foreach (var sceneGuid in sceneGuids)

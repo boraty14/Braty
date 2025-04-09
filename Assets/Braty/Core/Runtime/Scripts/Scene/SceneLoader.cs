@@ -13,8 +13,6 @@ namespace Braty.Core.Runtime.Scripts.Scene
         private readonly Dictionary<string, SceneInstance> _loadedScenes = new Dictionary<string, SceneInstance>();
         private readonly Dictionary<string, AsyncOperationHandle<SceneInstance>> _loadingOperations = new Dictionary<string, AsyncOperationHandle<SceneInstance>>();
 
-        private const string RootScene = "RootScene";
-        
         /// <summary>
         /// Loads a scene additively using its addressable key
         /// </summary>
