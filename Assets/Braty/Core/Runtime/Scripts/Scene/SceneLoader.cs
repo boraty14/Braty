@@ -21,9 +21,8 @@ namespace Braty.Core.Runtime.Scripts.Scene
         /// Loads a scene additively using its addressable key
         /// </summary>
         /// <param name="sceneKey">The addressable key of the scene</param>
-        /// <param name="activateOnLoad">Whether to activate the scene immediately after loading</param>
         /// <returns>True if the scene was loaded successfully</returns>
-        async UniTask<bool> ISceneLoader.LoadSceneAsync(string sceneKey, bool activateOnLoad)
+        async UniTask<bool> ISceneLoader.LoadSceneAsync(string sceneKey)
         {
             try
             {
@@ -43,19 +42,11 @@ namespace Braty.Core.Runtime.Scripts.Scene
                 }
 
                 // Start loading the scene
-                var loadOperation = Addressables.LoadSceneAsync(sceneKey, LoadSceneMode.Additive, false);
+                var loadOperation = Addressables.LoadSceneAsync(sceneKey, LoadSceneMode.Additive);
                 _loadingOperations[sceneKey] = loadOperation;
 
                 // Wait for the scene to load
                 var sceneInstance = await loadOperation.Task;
-                
-                // Override new scene parent scope
-                var bootScene = SceneManager.GetSceneByName(RootScene);
-                ReflexSceneManager.OverrideSceneParentContainer(scene: loadOperation.Result.Scene, parent: bootScene.GetSceneContainer());
-                if (activateOnLoad)
-                {
-                    await loadOperation.Result.ActivateAsync();
-                }
             
                 // Store the loaded scene
                 _loadedScenes[sceneKey] = sceneInstance;
