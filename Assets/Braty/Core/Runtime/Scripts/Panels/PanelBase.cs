@@ -66,7 +66,9 @@ namespace Braty.Core.Runtime.Scripts.Panels
             _isShown = false;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         protected virtual async UniTask OnOpening()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
         }
 
@@ -74,7 +76,9 @@ namespace Braty.Core.Runtime.Scripts.Panels
         {
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         protected virtual async UniTask OnClosing()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
         }
 

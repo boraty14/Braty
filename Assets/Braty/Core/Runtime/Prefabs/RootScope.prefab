@@ -60,12 +60,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1592232693037089702}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7490664017601176764}
+  m_Father: {fileID: 1831030886432714399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &882394597675808612
 MonoBehaviour:
@@ -105,12 +105,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1831121232792184006}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7490664017601176764}
+  m_Father: {fileID: 1831030886432714399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &8126541492125432420
 AudioSource:
@@ -257,7 +257,7 @@ RectTransform:
   m_Children:
   - {fileID: 7267905734722275500}
   - {fileID: 2245520992646003219}
-  m_Father: {fileID: 7490664017601176764}
+  m_Father: {fileID: 1831030886432714399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -366,12 +366,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4508062831602220226}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7490664017601176764}
+  m_Father: {fileID: 1831030886432714399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8617613234202507016
 MonoBehaviour:
@@ -450,12 +450,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5526966174597992591}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7490664017601176764}
+  m_Father: {fileID: 1831030886432714399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5445728231056222764
 MonoBehaviour:
@@ -500,14 +500,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5977978846559669296}
-  - {fileID: 8818068582285868526}
-  - {fileID: 1643207424800989402}
-  - {fileID: 2278481145764173191}
-  - {fileID: 4298344010472377852}
-  - {fileID: 7344537797434434029}
-  - {fileID: 8490254738869495862}
-  - {fileID: 188183319619778035}
+  - {fileID: 1831030886432714399}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7999123972512408739
@@ -534,14 +527,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c893cdcacaed46fe838dd4a9bcb7d520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _eventSystem: {fileID: 3912311079374116549}
-  _panelManager: {fileID: 441834420869585886}
-  _gameRoutineRunner: {fileID: 882394597675808612}
-  _monoEventDispatcher: {fileID: 6138856800445826740}
-  _monoStateManager: {fileID: 5445728231056222764}
-  _soundManager: {fileID: 8617613234202507016}
-  _musicManager: {fileID: 2606252044893941190}
-  _rootCamera: {fileID: 5094470663458986650}
 --- !u!1 &6541184996062958698
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,12 +552,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6541184996062958698}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7490664017601176764}
+  m_Father: {fileID: 1831030886432714399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6138856800445826740
 MonoBehaviour:
@@ -586,6 +571,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6fbb4f13a9844a08f69799b835625d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &6666401287121825203
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1831030886432714399}
+  m_Layer: 0
+  m_Name: RootScopeParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1831030886432714399
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6666401287121825203}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5977978846559669296}
+  - {fileID: 8818068582285868526}
+  - {fileID: 1643207424800989402}
+  - {fileID: 2278481145764173191}
+  - {fileID: 4298344010472377852}
+  - {fileID: 7344537797434434029}
+  - {fileID: 8490254738869495862}
+  - {fileID: 188183319619778035}
+  m_Father: {fileID: 7490664017601176764}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7617605673171989623
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,7 +643,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7490664017601176764}
+  m_Father: {fileID: 1831030886432714399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &4516832306044850595
 Camera:
@@ -768,7 +792,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7490664017601176764}
+  m_Father: {fileID: 1831030886432714399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3912311079374116549
 MonoBehaviour:
