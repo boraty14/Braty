@@ -534,6 +534,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c893cdcacaed46fe838dd4a9bcb7d520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _eventSystem: {fileID: 3912311079374116549}
   _panelManager: {fileID: 441834420869585886}
   _gameRoutineRunner: {fileID: 882394597675808612}
   _monoEventDispatcher: {fileID: 6138856800445826740}

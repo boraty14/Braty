@@ -12,11 +12,13 @@ using Braty.Core.Runtime.Scripts.Signals;
 using Braty.Core.Runtime.Scripts.State;
 using Reflex.Core;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Braty.Core.Runtime.Scripts.Root
 {
     public class RootScope : MonoBehaviour, IInstaller
     {
+        [SerializeField] private EventSystem _eventSystem;
         [SerializeField] private PanelManager _panelManager;
         [SerializeField] private GameRoutineRunner _gameRoutineRunner;
         [SerializeField] private MonoEventDispatcher _monoEventDispatcher;
@@ -27,13 +29,16 @@ namespace Braty.Core.Runtime.Scripts.Root
 
         public void InstallBindings(ContainerBuilder containerBuilder)
         {
-            containerBuilder.AddSingleton(_panelManager,typeof(IPanelManager));
-            containerBuilder.AddSingleton(_gameRoutineRunner,typeof(IGameRoutineRunner));
-            containerBuilder.AddSingleton(_monoEventDispatcher,typeof(IMonoEventDispatcher));
-            containerBuilder.AddSingleton(_monoStateManager,typeof(IMonoStateManager));
-            containerBuilder.AddSingleton(_soundManager,typeof(ISoundManager));
-            containerBuilder.AddSingleton(_musicManager,typeof(IMusicManager));
-            containerBuilder.AddSingleton(_rootCamera,typeof(IRootCamera));
+            var rootScopeParent = new GameObject("Root Scope Parent").transform;
+            Instantiate(_eventSystem, rootScopeParent);
+            containerBuilder.AddSingleton(Instantiate(_panelManager,rootScopeParent),typeof(IPanelManager));
+            containerBuilder.AddSingleton(Instantiate(_gameRoutineRunner,rootScopeParent),typeof(IGameRoutineRunner));
+            containerBuilder.AddSingleton(Instantiate(_monoEventDispatcher,rootScopeParent),typeof(IMonoEventDispatcher));
+            containerBuilder.AddSingleton(Instantiate(_monoStateManager,rootScopeParent),typeof(IMonoStateManager));
+            containerBuilder.AddSingleton(Instantiate(_soundManager,rootScopeParent),typeof(ISoundManager));
+            containerBuilder.AddSingleton(Instantiate(_musicManager,rootScopeParent),typeof(IMusicManager));
+            containerBuilder.AddSingleton(Instantiate(_rootCamera,rootScopeParent),typeof(IRootCamera));
+            
             containerBuilder.AddSingleton(typeof(GameTaskRunner),typeof(IGameTaskRunner));
             containerBuilder.AddSingleton(typeof(MonoPool),typeof(IMonoPool));
             containerBuilder.AddSingleton(typeof(SaveManager),typeof(ISaveManager));
