@@ -10,7 +10,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
         SoundEmitter Get();
         void ReturnToPool(SoundEmitter soundEmitter);
         void StopAll();
-        LinkedList<SoundEmitter> GetFrequentSoundEmitters();
+        LinkedListNode<SoundEmitter> AddFrequentSoundEmitter(SoundEmitter soundEmitter);
         Transform GetSoundTransform();
     }
 }

@@ -47,7 +47,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
 
             if (soundData.frequentSound)
             {
-                soundEmitter.Node = _soundManager.GetFrequentSoundEmitters().AddLast(soundEmitter);
+                soundEmitter.Node = _soundManager.AddFrequentSoundEmitter(soundEmitter);
             }
 
             soundEmitter.Play();
