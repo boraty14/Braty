@@ -1,0 +1,7 @@
+{
+  "name": "Braty Registry",
+  "url": "https://raw.githubusercontent.com/boraty14/Braty/main/Packages",
+  "scopes": [
+    "com.braty.core"
+  ]
+}
