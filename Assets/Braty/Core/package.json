@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "com.unity.addressables": "2.4.3",
-    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2.5.10"
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git#2.5.10"
   }
 }
