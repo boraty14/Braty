@@ -9,7 +9,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
 
         public SoundManager()
         {
-            _soundManagerBehaviour = Resources.Load<SoundManagerBehaviour>("SoundManagerBehaviour");
+            _soundManagerBehaviour = Object.Instantiate(Resources.Load<SoundManagerBehaviour>("SoundManagerBehaviour"));
         }
 
         SoundBuilder ISoundManager.CreateSoundBuilder() => new SoundBuilder(this);

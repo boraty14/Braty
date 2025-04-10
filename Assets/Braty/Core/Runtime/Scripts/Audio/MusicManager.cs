@@ -1,25 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Braty.Core.Runtime.Scripts.Audio
 {
-    [RequireComponent(typeof(AudioSource))]
-    public class MusicManager : MonoBehaviour, IMusicManager
+    public class MusicManager : IMusicManager
     {
-        [SerializeField] private List<AudioClip> _initialPlaylist;
-        [SerializeField] private AudioMixerGroup _musicMixerGroup;
-
         private const float CrossFadeTime = 1.0f;
         private float _fading;
         private AudioSource _current;
         private AudioSource _previous;
         private readonly Queue<AudioClip> _playlist = new();
+        private readonly MusicManagerBehaviour _musicManagerBehaviour;
 
-        private void Awake()
+        public MusicManager()
         {
-            _current = GetComponent<AudioSource>();
-            foreach (var clip in _initialPlaylist)
+            _musicManagerBehaviour = Object.Instantiate(Resources.Load<MusicManagerBehaviour>("MusicManagerBehaviour"));
+            _current = _musicManagerBehaviour.GetComponent<AudioSource>();
+            foreach (var clip in _musicManagerBehaviour.InitialPlaylist)
             {
                 AddToPlayListInternal(clip);
             }
@@ -65,14 +62,14 @@ namespace Braty.Core.Runtime.Scripts.Audio
 
             if (_previous)
             {
-                Destroy(_previous);
+                _musicManagerBehaviour.DestroyAudioSource(_previous);
                 _previous = null;
             }
 
             _previous = _current;
 
             _current.clip = clip;
-            _current.outputAudioMixerGroup = _musicMixerGroup; // Set mixer group
+            _current.outputAudioMixerGroup = _musicManagerBehaviour.MusicMixerGroup; // Set mixer group
             _current.loop = false; // For playlist functionality, we want tracks to play once
             _current.volume = 0;
             _current.bypassListenerEffects = true;
@@ -110,7 +107,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
                 _fading = 0.0f;
                 if (_previous)
                 {
-                    Destroy(_previous);
+                    _musicManagerBehaviour.DestroyAudioSource(_previous);
                     _previous = null;
                 }
             }

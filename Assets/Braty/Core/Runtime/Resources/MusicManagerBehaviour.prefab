@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7872002508990146087}
   - component: {fileID: 7506039666826032245}
-  - component: {fileID: 4379413420453798871}
+  - component: {fileID: -8068901172409874896}
   m_Layer: 0
   m_Name: MusicManagerBehaviour
   m_TagString: Untagged
@@ -130,7 +130,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4379413420453798871
+--- !u!114 &-8068901172409874896
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -139,7 +139,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 109487373367323351}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 938b494afd113c14dba68821e4b9ee8b, type: 3}
+  m_Script: {fileID: 11500000, guid: ed901d5f046c46dd8048d57f98a24bce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _initialPlaylist: []

@@ -14,7 +14,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
         
         public PanelManager(IRootCamera rootCamera)
         {
-            _panelHolderBehaviour = Resources.Load<PanelHolderBehaviour>("PanelHolderBehaviour");
+            _panelHolderBehaviour = UnityEngine.Object.Instantiate(Resources.Load<PanelHolderBehaviour>("PanelHolderBehaviour"));
             _panelHolderBehaviour.ParentCanvas.worldCamera = rootCamera.Camera;
         }
 

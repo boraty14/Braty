@@ -19,21 +19,14 @@ namespace Braty.Core.Runtime.Scripts.Root
     {
         public void InstallBindings(ContainerBuilder containerBuilder)
         {
-            var rootScopeBehaviourParent = Instantiate(transform.GetChild(0));
-            containerBuilder.AddSingleton(rootScopeBehaviourParent.GetComponentInChildren<SoundManager>(true),
-                typeof(ISoundManager));
-            containerBuilder.AddSingleton(rootScopeBehaviourParent.GetComponentInChildren<MusicManager>(true),
-                typeof(IMusicManager));
-            containerBuilder.AddSingleton(rootScopeBehaviourParent.GetComponentInChildren<RootCamera>(true),
-                typeof(IRootCamera));
-            containerBuilder.AddSingleton(rootScopeBehaviourParent.GetComponentInChildren<PanelManager>(true),
-                typeof(IPanelManager));
-
-            
             containerBuilder.AddSingleton(typeof(GameTaskRunner), typeof(IGameTaskRunner));
             containerBuilder.AddSingleton(typeof(MonoStateManager), typeof(IMonoStateManager));
             containerBuilder.AddSingleton(typeof(GameRoutineRunner), typeof(IGameRoutineRunner));
             containerBuilder.AddSingleton(typeof(MonoEventDispatcher), typeof(IMonoEventDispatcher));
+            containerBuilder.AddSingleton(typeof(SoundManager), typeof(ISoundManager));
+            containerBuilder.AddSingleton(typeof(MusicManager), typeof(IMusicManager));
+            containerBuilder.AddSingleton(typeof(PanelManager), typeof(IPanelManager));
+            containerBuilder.AddSingleton(typeof(RootCamera), typeof(IRootCamera));
             containerBuilder.AddSingleton(typeof(MonoPool), typeof(IMonoPool));
             containerBuilder.AddSingleton(typeof(SaveManager), typeof(ISaveManager));
             containerBuilder.AddSingleton(typeof(SceneLoader), typeof(ISceneLoader));
