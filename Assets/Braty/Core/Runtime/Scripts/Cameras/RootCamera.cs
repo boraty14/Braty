@@ -1,3 +1,4 @@
+using Braty.Core.Runtime.Scripts.Panels;
 using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.Cameras

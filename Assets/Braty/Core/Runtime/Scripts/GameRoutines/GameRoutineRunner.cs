@@ -4,13 +4,19 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.GameRoutines
 {
-    public class GameRoutineRunner : MonoBehaviour, IGameRoutineRunner
+    public class GameRoutineRunner : IGameRoutineRunner
     {
         private readonly Dictionary<string, List<Coroutine>> _runningTagGameRoutines = new();
-        
+        private readonly GameRoutineRunnerBehaviour _gameRoutineRunnerBehaviour;
+
+        public GameRoutineRunner()
+        {
+            _gameRoutineRunnerBehaviour = new GameObject("GameRoutineRunnerBehaviour").AddComponent<GameRoutineRunnerBehaviour>();
+        }
+
         void IGameRoutineRunner.RunIndependentRoutine(IEnumerator gameRoutine, string routineTag)
         {
-            StartCoroutine(RunRoutineInternal(gameRoutine,routineTag));
+            _gameRoutineRunnerBehaviour.StartCoroutine(RunRoutineInternal(gameRoutine,routineTag));
         }
 
         void IGameRoutineRunner.CancelRunningTagRoutines(string routineTag)
@@ -22,7 +28,7 @@ namespace Braty.Core.Runtime.Scripts.GameRoutines
 
             foreach (var tagRoutine in _runningTagGameRoutines[routineTag])
             {
-                StopCoroutine(tagRoutine);
+                _gameRoutineRunnerBehaviour.StopCoroutine(tagRoutine);
             }
             _runningTagGameRoutines[routineTag].Clear();
         }
@@ -33,7 +39,7 @@ namespace Braty.Core.Runtime.Scripts.GameRoutines
             {
                 foreach (var routine in tagRoutines.Value)
                 {
-                    StopCoroutine(routine);
+                    _gameRoutineRunnerBehaviour.StopCoroutine(routine);
                 }
                 tagRoutines.Value.Clear();
             }
@@ -47,15 +53,10 @@ namespace Braty.Core.Runtime.Scripts.GameRoutines
                 _runningTagGameRoutines[routineTag] = new List<Coroutine>();
             }
 
-            var coroutine = StartCoroutine(gameRoutine);
+            var coroutine = _gameRoutineRunnerBehaviour.StartCoroutine(gameRoutine);
             _runningTagGameRoutines[routineTag].Add(coroutine);
             yield return coroutine;
             _runningTagGameRoutines[routineTag].Remove(coroutine);
-        }
-
-        private void OnDestroy()
-        {
-            StopAllCoroutines();
         }
     }
 }

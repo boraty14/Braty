@@ -1,18 +1,22 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Braty.Core.Runtime.Scripts.Cameras;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace Braty.Core.Runtime.Scripts.Panels
 {
-    public class PanelManager : MonoBehaviour, IPanelManager
+    public class PanelManager : IPanelManager
     {
-        [SerializeField] private Transform _safeArea;
-        [SerializeField] private Transform _normalArea;
-        
         private readonly Dictionary<Type, GameObject> _panels = new();
+        private readonly PanelHolderBehaviour _panelHolderBehaviour;
+        
+        public PanelManager(IRootCamera rootCamera)
+        {
+            _panelHolderBehaviour = Resources.Load<PanelHolderBehaviour>("PanelHolderBehaviour");
+            _panelHolderBehaviour.ParentCanvas.worldCamera = rootCamera.Camera;
+        }
 
         private event Action<IPanel> OnPanelOpening;
         event Action<IPanel> IPanelManager.OnPanelOpening
@@ -42,7 +46,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
         async UniTask IPanelManager.ShowPanel<T>(bool isSafeArea)
         {
             var panelKey = typeof(T);
-            var newParent = isSafeArea ? _safeArea : _normalArea;
+            var newParent = isSafeArea ? _panelHolderBehaviour.SafeArea : _panelHolderBehaviour.NormalArea;
             if (!_panels.ContainsKey(panelKey))
             {
                 await LoadPanel<T>(newParent);
@@ -83,18 +87,6 @@ namespace Braty.Core.Runtime.Scripts.Panels
         T IPanelManager.GetPanel<T>()
         {
             return _panels[typeof(T)].GetComponent<T>();
-        }
-        
-        private void Awake()
-        {
-            var panels = GetComponentsInChildren<PanelBase>(true);
-            foreach (var panel in panels)
-            {
-                var basePanelKey = panel.GetType();
-                var panelKey = basePanelKey.GetInterfaces()
-                    .FirstOrDefault(t => t != typeof(IPanel) && typeof(IPanel).IsAssignableFrom(t));
-                _panels.TryAdd(panelKey, panel.gameObject);
-            }
         }
         
         private async UniTask LoadPanel<T>(Transform newParent) where T : IPanel

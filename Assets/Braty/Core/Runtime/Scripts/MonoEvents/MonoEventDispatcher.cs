@@ -3,8 +3,21 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.MonoEvents
 {
-    public class MonoEventDispatcher : MonoBehaviour, IMonoEventDispatcher
+    public class MonoEventDispatcher : IMonoEventDispatcher
     {
+        private readonly MonoEventDispatcherBehaviour _monoEventDispatcherBehaviour;
+
+        public MonoEventDispatcher()
+        {
+            _monoEventDispatcherBehaviour = new GameObject("MonoEventDispatcherBehaviour").AddComponent<MonoEventDispatcherBehaviour>();
+            _monoEventDispatcherBehaviour.OnStart += () => OnStart?.Invoke();
+            _monoEventDispatcherBehaviour.OnUpdate += () => OnUpdate?.Invoke();
+            _monoEventDispatcherBehaviour.OnFixedUpdate += () => OnFixedUpdate?.Invoke();
+            _monoEventDispatcherBehaviour.OnLateUpdate += () => OnLateUpdate?.Invoke();
+            _monoEventDispatcherBehaviour.OnAppPause += () => OnAppPause?.Invoke();
+            _monoEventDispatcherBehaviour.OnAppResume += () => OnAppResume?.Invoke();
+        }
+        
         private event Action OnAppPause;
         event Action IMonoEventDispatcher.OnAppPause
         {
@@ -40,39 +53,6 @@ namespace Braty.Core.Runtime.Scripts.MonoEvents
         {
             add => this.OnLateUpdate += value;
             remove => this.OnLateUpdate -= value;
-        }
-
-        private void Start()
-        {
-            OnStart?.Invoke();
-        }
-
-        private void Update()
-        {
-            OnUpdate?.Invoke();
-        }
-
-        private void FixedUpdate()
-        {
-            OnFixedUpdate?.Invoke();
-        }
-
-        private void LateUpdate()
-        {
-            OnLateUpdate?.Invoke();
-        }
-
-        private void OnApplicationPause(bool pauseStatus)
-        {
-            if (pauseStatus)
-            {
-                OnAppPause?.Invoke();
-            }
-
-            else
-            {
-                OnAppResume?.Invoke();
-            }
         }
     }
 }

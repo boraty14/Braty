@@ -4,17 +4,26 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.State
 {
-    public class MonoStateManager : MonoBehaviour, IMonoStateManager
+    public class MonoStateManager : IMonoStateManager
     {
         private readonly Dictionary<Type, MonoState> _states = new();
-        
-        private void Awake()
+        private readonly MonoStateHolderBehaviour _monoStateHolderBehaviour;
+
+        public MonoStateManager()
         {
-            var states = GetComponents<MonoState>();
-            foreach (var state in states)
+            _monoStateHolderBehaviour = new GameObject("MonoStateHolderBehaviour").AddComponent<MonoStateHolderBehaviour>();
+        }
+        
+        void IMonoStateManager.Add<T>()
+        {
+            var key = typeof(T);
+            if (_states.ContainsKey(key))
             {
-                _states.TryAdd(state.GetType(), state);
+                Debug.LogError($"Key for mono state {key} already exists");
+                return;
             }
+            var stateBehaviour = _monoStateHolderBehaviour.gameObject.AddComponent<T>();
+            _states.TryAdd(key, stateBehaviour);
         }
 
         T IMonoStateManager.Get<T>()
