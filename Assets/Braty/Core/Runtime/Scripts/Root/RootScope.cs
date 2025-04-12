@@ -6,7 +6,6 @@ using Braty.Core.Runtime.Scripts.GameTasks;
 using Braty.Core.Runtime.Scripts.MonoEvents;
 using Braty.Core.Runtime.Scripts.Panels;
 using Braty.Core.Runtime.Scripts.Pool;
-using Braty.Core.Runtime.Scripts.Save;
 using Braty.Core.Runtime.Scripts.Scene;
 using Braty.Core.Runtime.Scripts.Signals;
 using Braty.Core.Runtime.Scripts.State;
@@ -28,7 +27,6 @@ namespace Braty.Core.Runtime.Scripts.Root
             containerBuilder.AddSingleton(typeof(PanelManager), typeof(IPanelManager));
             containerBuilder.AddSingleton(typeof(RootCamera), typeof(IRootCamera));
             containerBuilder.AddSingleton(typeof(MonoPool), typeof(IMonoPool));
-            containerBuilder.AddSingleton(typeof(SaveManager), typeof(ISaveManager));
             containerBuilder.AddSingleton(typeof(SceneLoader), typeof(ISceneLoader));
             containerBuilder.AddSingleton(typeof(SignalBus), typeof(ISignalBus));
             containerBuilder.AddSingleton(typeof(AssetLoader), typeof(IAssetLoader));
