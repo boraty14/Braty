@@ -1,5 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.Panels
 {
@@ -13,5 +14,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
         UniTask ShowPanel<T>(bool isSafeArea = true) where T : IPanel;
         UniTask HidePanel<T>(bool unloadPanel = false) where T : IPanel;
         T GetPanel<T>() where T : IPanel;
+        
+        public Camera PanelCamera { get; set; }
     }
 }

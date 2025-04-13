@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Braty.Core.Runtime.Scripts.Cameras;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -11,11 +10,17 @@ namespace Braty.Core.Runtime.Scripts.Panels
     {
         private readonly Dictionary<Type, GameObject> _panels = new();
         private readonly PanelHolderBehaviour _panelHolderBehaviour;
-        
-        public PanelManager(IRootCamera rootCamera)
+
+        public PanelManager()
         {
-            _panelHolderBehaviour = UnityEngine.Object.Instantiate(Resources.Load<PanelHolderBehaviour>("PanelHolderBehaviour"));
-            _panelHolderBehaviour.ParentCanvas.worldCamera = rootCamera.Camera;
+            _panelHolderBehaviour =
+                UnityEngine.Object.Instantiate(Resources.Load<PanelHolderBehaviour>("PanelHolderBehaviour"));
+        }
+
+        public Camera PanelCamera
+        {
+            get => _panelHolderBehaviour.PanelCamera;
+            set => _panelHolderBehaviour.SetCamera(value);
         }
 
         private event Action<IPanel> OnPanelOpening;
@@ -59,7 +64,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
             }
 
             var panel = panelObject.GetComponent<T>();
-            panel.RectTransform.SetParent(newParent,false);
+            panel.RectTransform.SetParent(newParent, false);
             OnPanelOpening?.Invoke(panel);
             await panel.Show();
             OnPanelOpened?.Invoke(panel);
@@ -83,12 +88,12 @@ namespace Braty.Core.Runtime.Scripts.Panels
                 UnloadPanel<T>();
             }
         }
-        
+
         T IPanelManager.GetPanel<T>()
         {
             return _panels[typeof(T)].GetComponent<T>();
         }
-        
+
         private async UniTask LoadPanel<T>(Transform newParent) where T : IPanel
         {
             var panelKey = typeof(T);
