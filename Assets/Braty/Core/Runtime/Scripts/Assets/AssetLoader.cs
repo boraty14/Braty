@@ -1,46 +1,69 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Braty.Core.Runtime.Scripts.Assets
 {
-    public class AssetLoader : IAssetLoader
+    public static class AssetLoader
     {
-        private readonly Dictionary<string, AssetLoadDefinition> _assetLoadDefinitions = new();
-        
-        async UniTask<T> IAssetLoader.LoadAsset<T>(string key)
+        private static readonly Dictionary<string, AsyncOperationHandle> _assetHandles = new();
+        private static readonly Dictionary<Type, AsyncOperationHandle> _monoHandles = new();
+
+        public static void Init()
         {
-            if (_assetLoadDefinitions.TryGetValue(key, out var definition))
+            _assetHandles.Clear();
+            _monoHandles.Clear();
+        }
+
+        public static IEnumerator LoadAsset<T>(string key)
+        {
+            if (_assetHandles.ContainsKey(key))
             {
-                return (T)definition.Result;
+                yield break;
             }
             
             var handle = Addressables.LoadAssetAsync<T>(key);
-            var result = await handle.ToUniTask();
-            _assetLoadDefinitions.TryAdd(key, new AssetLoadDefinition
+            yield return handle;
+            _assetHandles.TryAdd(key,handle);
+        }
+
+        public static void UnloadAsset<T>(string key)
+        {
+            Addressables.Release(_assetHandles[key]);
+            _assetHandles.Remove(key);
+        }
+
+        public static T GetAsset<T>(string key)
+        {
+            return (T)_assetHandles[key].Result;
+        }
+        
+        public static IEnumerator LoadMono<T>()
+        {
+            var key = typeof(T);
+            if (_monoHandles.ContainsKey(key))
             {
-                Handle = handle,
-                Result = result
-            });
-            return result;
+                yield break;
+            }
+            
+            var handle = Addressables.LoadAssetAsync<T>(key);
+            yield return handle;
+            _monoHandles.TryAdd(key,handle);
         }
 
-        void IAssetLoader.UnloadAsset<T>(string key)
+        public static void UnloadMono<T>()
         {
-            Addressables.Release(_assetLoadDefinitions[key]);
-            _assetLoadDefinitions.Remove(key);
+            var key = typeof(T);
+            Addressables.Release(_monoHandles[key]);
+            _monoHandles.Remove(key);
         }
 
-        async UniTask<T> IAssetLoader.InstantiateMonoBehaviour<T>(Transform parent)
+        public static T GetMonoInstance<T>(Transform monoParent = null) where T : MonoBehaviour
         {
-            var gameObject = await Addressables.InstantiateAsync(typeof(T),parent).ToUniTask();
-            return gameObject.GetComponent<T>();
-        }
-
-        void IAssetLoader.ReleaseMonoBehaviour<T>(T monoBehaviour)
-        {
-            Addressables.ReleaseInstance(monoBehaviour.gameObject);
+            return UnityEngine.Object.Instantiate((T)_monoHandles[typeof(T)].Result);
         }
     }
 }

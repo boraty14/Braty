@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Braty.Core.Runtime.Scripts.Signals
 {
-    public class SignalBus : ISignalBus
+    public static class SignalBus
     {
-        private readonly Dictionary<Type, object> _actions = new();
+        private static readonly Dictionary<Type, object> _actions = new();
 
-        void ISignalBus.Register<T>(Action<T> action)
+        public static void Register<T>(Action<T> action)
         {
             var key = typeof(T);
             if (!_actions.TryGetValue(key, out var value))
@@ -19,7 +19,7 @@ namespace Braty.Core.Runtime.Scripts.Signals
             _actions[key] = (Action<T>)value + action;
         }
 
-        void ISignalBus.Unregister<T>(Action<T> action)
+        public static void Unregister<T>(Action<T> action)
         {
             var key = typeof(T);
             if (!_actions.TryGetValue(key, out var value))
@@ -31,7 +31,7 @@ namespace Braty.Core.Runtime.Scripts.Signals
         }
 
 
-        void ISignalBus.Invoke<T>(T arg)
+        public static void Invoke<T>(T arg)
         {
             var key = typeof(T);
             if (!_actions.TryGetValue(key, out var value))

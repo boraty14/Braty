@@ -1,19 +1,5 @@
 {
   "dependencies": {
-    "com.cysharp.unitask": {
-      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "06067cd4c83e372310d6f79d1c625f6870ff7a2a"
-    },
-    "com.gustavopsantos.reflex": {
-      "version": "https://github.com/gustavopsantos/reflex.git?path=/Assets/Reflex/#10.0.2",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "593403f2a14c5a1404d8ccec1729abe2959fd47a"
-    },
     "com.unity.addressables": {
       "version": "2.4.3",
       "depth": 0,

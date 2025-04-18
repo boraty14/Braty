@@ -1,76 +1,52 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace Braty.Core.Runtime.Scripts.Panels
 {
-    public class PanelManager : IPanelManager
+    public class PanelManager : MonoBehaviour
     {
+        [SerializeField] private RectTransform _safeArea;
+        [SerializeField] private RectTransform _normalArea;
+        
         private readonly Dictionary<Type, GameObject> _panels = new();
-        private readonly PanelHolderBehaviour _panelHolderBehaviour;
+        public static PanelManager I { get; private set; }
 
-        public PanelManager()
+        private void Awake()
         {
-            _panelHolderBehaviour =
-                UnityEngine.Object.Instantiate(Resources.Load<PanelHolderBehaviour>("PanelHolderBehaviour"));
-        }
-
-        public Camera PanelCamera
-        {
-            get => _panelHolderBehaviour.PanelCamera;
-            set => _panelHolderBehaviour.SetCamera(value);
+            I = this;
         }
 
-        private event Action<IPanel> OnPanelOpening;
-        event Action<IPanel> IPanelManager.OnPanelOpening
-        {
-            add => this.OnPanelOpening += value;
-            remove => this.OnPanelOpening -= value;
-        }
-        private event Action<IPanel> OnPanelOpened;
-        event Action<IPanel> IPanelManager.OnPanelOpened
-        {
-            add => this.OnPanelOpened += value;
-            remove => this.OnPanelOpened -= value;
-        }
-        private event Action<IPanel> OnPanelClosing;
-        event Action<IPanel> IPanelManager.OnPanelClosing
-        {
-            add => this.OnPanelClosing += value;
-            remove => this.OnPanelClosing -= value;
-        }
-        private event Action<IPanel> OnPanelClosed;
-        event Action<IPanel> IPanelManager.OnPanelClosed
-        {
-            add => this.OnPanelClosed += value;
-            remove => this.OnPanelClosed -= value;
-        }
+        public event Action<PanelBase> OnPanelOpening;
+        public event Action<PanelBase> OnPanelOpened;
+        public event Action<PanelBase> OnPanelClosing;
+        public event Action<PanelBase> OnPanelClosed;
 
-        async UniTask IPanelManager.ShowPanel<T>(bool isSafeArea)
+        public void ShowPanel<T>(bool isSafeArea) where T: PanelBase
         {
             var panelKey = typeof(T);
-            var newParent = isSafeArea ? _panelHolderBehaviour.SafeArea : _panelHolderBehaviour.NormalArea;
-            if (!_panels.ContainsKey(panelKey))
-            {
-                await LoadPanel<T>(newParent);
-            }
+            var newParent = isSafeArea ? _safeArea : _normalArea;
+            StartCoroutine(ShowRoutine());
+            return;
 
-            if (!_panels.TryGetValue(panelKey, out var panelObject))
+            IEnumerator ShowRoutine()
             {
-                Debug.LogError($"Panel {panelKey} is not loaded can't show");
-                return;
-            }
+                if (!_panels.ContainsKey(panelKey))
+                {
+                    yield return LoadPanel<T>(newParent);
+                }
 
-            var panel = panelObject.GetComponent<T>();
-            panel.RectTransform.SetParent(newParent, false);
-            OnPanelOpening?.Invoke(panel);
-            await panel.Show();
-            OnPanelOpened?.Invoke(panel);
+                var panel = GetPanel<T>();
+                panel.RectTransform.SetParent(newParent, false);
+                OnPanelOpening?.Invoke(panel);
+                yield return panel.Show();
+                OnPanelOpened?.Invoke(panel);
+            }
         }
 
-        async UniTask IPanelManager.HidePanel<T>(bool unloadPanel)
+        public void HidePanel<T>(bool unloadPanel) where T: PanelBase
         {
             var dynamicPanelKey = typeof(T);
             if (!_panels.TryGetValue(dynamicPanelKey, out var dynamicPanelObject))
@@ -79,41 +55,50 @@ namespace Braty.Core.Runtime.Scripts.Panels
                 return;
             }
 
-            var dynamicPanel = dynamicPanelObject.GetComponent<T>();
-            OnPanelClosing?.Invoke(dynamicPanel);
-            await dynamicPanel.Hide();
-            OnPanelClosed?.Invoke(dynamicPanel);
-            if (unloadPanel)
+            StartCoroutine(HideRoutine());
+            return;
+
+            IEnumerator HideRoutine()
             {
-                UnloadPanel<T>();
+                var dynamicPanel = dynamicPanelObject.GetComponent<T>();
+                OnPanelClosing?.Invoke(dynamicPanel);
+                yield return dynamicPanel.Hide();
+                OnPanelClosed?.Invoke(dynamicPanel);
+                if (unloadPanel)
+                {
+                    yield return UnloadPanel<T>();
+                }
             }
         }
 
-        T IPanelManager.GetPanel<T>()
+        public T GetPanel<T>()
         {
             return _panels[typeof(T)].GetComponent<T>();
         }
 
-        private async UniTask LoadPanel<T>(Transform newParent) where T : IPanel
+        private IEnumerator LoadPanel<T>(Transform newParent) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (_panels.ContainsKey(panelKey))
             {
                 Debug.LogError($"Panel {panelKey} is already loaded");
+                yield break;
             }
 
-            var panelObject = await Addressables.InstantiateAsync(typeof(T).Name, newParent);
+            var panelHandle = Addressables.InstantiateAsync(typeof(T).Name, newParent);
+            yield return panelHandle;
+            var panelObject = panelHandle.Result;
             panelObject.SetActive(false);
             _panels.Add(panelKey, panelObject);
         }
 
-        private void UnloadPanel<T>() where T : IPanel
+        private IEnumerator UnloadPanel<T>() where T: PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.Remove(panelKey, out var panelObject))
             {
                 Debug.LogError($"Panel {panelKey} is not loaded can't unload");
-                return;
+                yield break;
             }
 
             Addressables.ReleaseInstance(panelObject);

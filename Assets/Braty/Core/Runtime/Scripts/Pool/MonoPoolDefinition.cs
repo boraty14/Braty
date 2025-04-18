@@ -3,18 +3,13 @@ using UnityEngine.Pool;
 
 namespace Braty.Core.Runtime.Scripts.Pool
 {
-    public abstract class MonoPoolObject
-    {
-        
-    }
-    
-    public class MonoPoolObject<T> : MonoPoolObject where T : MonoBehaviour
+    public struct MonoPoolDefinition<T> where T : MonoBehaviour
     {
         public readonly T Prefab;
         public readonly ObjectPool<T> Pool;
         public readonly Transform Parent;
 
-        public MonoPoolObject(T prefab, ObjectPool<T> pool, Transform parent)
+        public MonoPoolDefinition(T prefab, ObjectPool<T> pool, Transform parent)
         {
             Prefab = prefab;
             Pool = pool;

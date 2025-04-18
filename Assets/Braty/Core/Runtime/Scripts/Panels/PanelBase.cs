@@ -1,89 +1,72 @@
-using Cysharp.Threading.Tasks;
+using System.Collections;
 using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.Panels
 {
     [RequireComponent(typeof(CanvasGroup))]
     [RequireComponent(typeof(Canvas))]
-    public abstract class PanelBase : MonoBehaviour, IPanel
+    public abstract class PanelBase : MonoBehaviour
     {
-        CanvasGroup IPanel.CanvasGroup
-        {
-            get
-            {
-                if (_canvasGroup == null)
-                {
-                    _canvasGroup = GetComponent<CanvasGroup>();
-                }
+        public CanvasGroup CanvasGroup { get; private set; }
+        public RectTransform RectTransform { get; private set; }
+        public bool IsShown { get; private set; }
 
-                return _canvasGroup;
-            }
-        }
-        RectTransform IPanel.RectTransform
+        internal IEnumerator Show()
         {
-            get
-            {
-                if (_rectTransform == null)
-                {
-                    _rectTransform = GetComponent<RectTransform>();
-                }
-
-                return _rectTransform;
-            }
-        }
-        
-        bool IPanel.IsShown => _isShown;
-        
-        private bool _isShown;
-        private CanvasGroup _canvasGroup;
-        private RectTransform _rectTransform;
-        
-        async UniTask IPanel.Show()
-        {
-            if (_isShown)
+            if (IsShown)
             {
                 Debug.LogWarning($"Panel {gameObject.name} has already been shown.");
-                return;
+                yield break;
             }
 
-            gameObject.SetActive(true);
-            await OnOpening();
-            OnOpened();
-            _isShown = true;
+            yield return ShowRoutine();
         }
 
-        async UniTask IPanel.Hide()
+        internal IEnumerator Hide()
         {
-            if (!_isShown)
+            if (!IsShown)
             {
                 Debug.LogWarning($"Panel {gameObject.name} has already been hidden.");
-                return;
+                yield break;
             }
-            
-            await OnClosing();
-            OnClosed();
+
+            yield return HideRoutine();
+        }
+
+        private IEnumerator ShowRoutine()
+        {
+            IsShown = true;
+            gameObject.SetActive(true);
+            yield return OnOpening();
+            yield return OnOpened();
+        }
+
+        private IEnumerator HideRoutine()
+        {
+            IsShown = false;
+            yield return OnClosing();
+            yield return OnClosed();
             gameObject.SetActive(false);
-            _isShown = false;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        protected virtual async UniTask OnOpening()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        protected virtual IEnumerator OnOpening()
         {
+            yield break;
         }
 
-        protected virtual void OnOpened()
+        protected virtual IEnumerator OnOpened()
         {
+            yield break;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        protected virtual async UniTask OnClosing()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        protected virtual IEnumerator OnClosing()
         {
+            yield break;
         }
 
-        protected virtual void OnClosed()
+        protected virtual IEnumerator OnClosed()
         {
+            yield break;
         }
     }
 }
