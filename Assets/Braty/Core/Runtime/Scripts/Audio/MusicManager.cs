@@ -1,75 +1,66 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Braty.Core.Runtime.Scripts.Audio
 {
-    public class MusicManager : IMusicManager
+    [RequireComponent(typeof(AudioSource))]
+    public class MusicManager : MonoBehaviour
     {
-        private const float CrossFadeTime = 1.0f;
+        [SerializeField] private List<AudioClip> _initialPlaylist;
+        [SerializeField] private AudioMixerGroup _musicMixerGroup;
+        [SerializeField] private float _crossFadeTime = 1.0f;
+        
         private float _fading;
         private AudioSource _current;
         private AudioSource _previous;
         private readonly Queue<AudioClip> _playlist = new();
-        private readonly MusicManagerBehaviour _musicManagerBehaviour;
 
-        public MusicManager()
+        private void Start()
         {
-            _musicManagerBehaviour = Object.Instantiate(Resources.Load<MusicManagerBehaviour>("MusicManagerBehaviour"));
-            _current = _musicManagerBehaviour.GetComponent<AudioSource>();
-            foreach (var clip in _musicManagerBehaviour.InitialPlaylist)
+            foreach (var clip in _initialPlaylist)
             {
-                AddToPlayListInternal(clip);
+                AddToPlaylist(clip);
             }
         }
 
-        void IMusicManager.AddToPlaylist(AudioClip clip)
-        {
-            AddToPlayListInternal(clip);
-        }
-
-        private void AddToPlayListInternal(AudioClip clip)
+        public void AddToPlaylist(AudioClip clip)
         {
             _playlist.Enqueue(clip);
             if (_current == null && _previous == null)
             {
-                PlayNextTrackInternal();
+                PlayNextTrack();
             }
         }
 
-        void IMusicManager.Clear() => _playlist.Clear();
+        public void Clear() => _playlist.Clear();
 
-        void IMusicManager.PlayNextTrack()
-        {
-            PlayNextTrackInternal();
-        }
-
-        private void PlayNextTrackInternal()
+        public void PlayNextTrack()
         {
             if (_playlist.TryDequeue(out AudioClip nextTrack))
             {
-                PlayInternal(nextTrack);
+                Play(nextTrack);
             }
         }
 
-        void IMusicManager.Play(AudioClip clip)
-        {
-            PlayInternal(clip);
-        }
-
-        private void PlayInternal(AudioClip clip)
+        public void Play(AudioClip clip)
         {
             if (_current && _current.clip == clip) return;
 
             if (_previous)
             {
-                _musicManagerBehaviour.DestroyAudioSource(_previous);
+                Destroy(_previous);
                 _previous = null;
             }
 
             _previous = _current;
 
+            if (!TryGetComponent<AudioSource>(out _current))
+            {
+                _current = gameObject.AddComponent<AudioSource>();
+            }
             _current.clip = clip;
-            _current.outputAudioMixerGroup = _musicManagerBehaviour.MusicMixerGroup; // Set mixer group
+            _current.outputAudioMixerGroup = _musicMixerGroup; // Set mixer group
             _current.loop = false; // For playlist functionality, we want tracks to play once
             _current.volume = 0;
             _current.bypassListenerEffects = true;
@@ -78,23 +69,23 @@ namespace Braty.Core.Runtime.Scripts.Audio
             _fading = 0.001f;
         }
 
-        private void Update()
+        void Update()
         {
             HandleCrossFade();
 
             if (_current && !_current.isPlaying && _playlist.Count > 0)
             {
-                PlayNextTrackInternal();
+                PlayNextTrack();
             }
         }
 
-        private void HandleCrossFade()
+        void HandleCrossFade()
         {
             if (_fading <= 0f) return;
 
             _fading += Time.deltaTime;
 
-            float fraction = Mathf.Clamp01(_fading / CrossFadeTime);
+            float fraction = Mathf.Clamp01(_fading / _crossFadeTime);
 
             // Logarithmic fade
             float logFraction = fraction.ToLogarithmicFraction();
@@ -107,7 +98,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
                 _fading = 0.0f;
                 if (_previous)
                 {
-                    _musicManagerBehaviour.DestroyAudioSource(_previous);
+                    Destroy(_previous);
                     _previous = null;
                 }
             }

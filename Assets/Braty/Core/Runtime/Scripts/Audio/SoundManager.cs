@@ -1,40 +1,118 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Braty.Core.Runtime.Scripts.Audio
 {
-    public class SoundManager : ISoundManager
+    public class SoundManager : MonoBehaviour
     {
-        private readonly SoundManagerBehaviour _soundManagerBehaviour;
+        [SerializeField] SoundEmitter soundEmitterPrefab;
+        [SerializeField] bool collectionCheck = true;
+        [SerializeField] int defaultCapacity = 10;
+        [SerializeField] int maxPoolSize = 100;
+        [SerializeField] int maxSoundInstances = 30;
+        
+        private IObjectPool<SoundEmitter> _soundEmitterPool;
+        private readonly List<SoundEmitter> _activeSoundEmitters = new();
+        public readonly LinkedList<SoundEmitter> FrequentSoundEmitters = new();
+        
+        public static SoundManager I { get; private set; }
 
-        public SoundManager()
+        private void Awake()
         {
-            _soundManagerBehaviour = Object.Instantiate(Resources.Load<SoundManagerBehaviour>("SoundManagerBehaviour"));
+            I = this;
         }
 
-        SoundBuilder ISoundManager.CreateSoundBuilder() => new SoundBuilder(this);
-
-        bool ISoundManager.CanPlaySound(SoundData data)
+        private void Start()
         {
-            return _soundManagerBehaviour.CanPlaySound(data);
+            InitializePool();
         }
 
-        SoundEmitter ISoundManager.Get()
+        public SoundBuilder CreateSoundBuilder() => new SoundBuilder(this);
+
+        public bool CanPlaySound(SoundData data)
         {
-            return _soundManagerBehaviour.Get();
+            if (!data.frequentSound) return true;
+
+            if (FrequentSoundEmitters.Count >= maxSoundInstances)
+            {
+                try
+                {
+                    FrequentSoundEmitters.First.Value.Stop();
+                    return true;
+                }
+                catch
+                {
+                    Debug.Log("SoundEmitter is already released");
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
-        void ISoundManager.ReturnToPool(SoundEmitter soundEmitter)
+        public SoundEmitter Get()
         {
-            _soundManagerBehaviour.Release(soundEmitter);
+            return _soundEmitterPool.Get();
         }
 
-        void ISoundManager.StopAll()
+        public void ReturnToPool(SoundEmitter soundEmitter)
         {
-            _soundManagerBehaviour.StopAll();
+            _soundEmitterPool.Release(soundEmitter);
         }
 
-        LinkedListNode<SoundEmitter> ISoundManager.AddFrequentSoundEmitter(SoundEmitter soundEmitter) => _soundManagerBehaviour.AddFrequentSoundEmitter(soundEmitter);
-        Transform ISoundManager.GetSoundTransform() => _soundManagerBehaviour.transform;
+        public void StopAll()
+        {
+            foreach (var soundEmitter in _activeSoundEmitters)
+            {
+                soundEmitter.Stop();
+            }
+
+            FrequentSoundEmitters.Clear();
+        }
+
+        private void InitializePool()
+        {
+            _soundEmitterPool = new ObjectPool<SoundEmitter>(
+                CreateSoundEmitter,
+                OnTakeFromPool,
+                OnReturnedToPool,
+                OnDestroyPoolObject,
+                collectionCheck,
+                defaultCapacity,
+                maxPoolSize);
+        }
+
+        private SoundEmitter CreateSoundEmitter()
+        {
+            var soundEmitter = Instantiate(soundEmitterPrefab);
+            soundEmitter.gameObject.SetActive(false);
+            return soundEmitter;
+        }
+
+        private void OnTakeFromPool(SoundEmitter soundEmitter)
+        {
+            soundEmitter.gameObject.SetActive(true);
+            _activeSoundEmitters.Add(soundEmitter);
+        }
+
+        private void OnReturnedToPool(SoundEmitter soundEmitter)
+        {
+            if (soundEmitter.Node != null)
+            {
+                FrequentSoundEmitters.Remove(soundEmitter.Node);
+                soundEmitter.Node = null;
+            }
+
+            soundEmitter.gameObject.SetActive(false);
+            _activeSoundEmitters.Remove(soundEmitter);
+        }
+
+        private void OnDestroyPoolObject(SoundEmitter soundEmitter)
+        {
+            Destroy(soundEmitter.gameObject);
+        }
     }
 }

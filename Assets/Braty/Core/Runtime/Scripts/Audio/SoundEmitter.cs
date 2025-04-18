@@ -11,19 +11,19 @@ namespace Braty.Core.Runtime.Scripts.Audio
         public SoundData Data { get; private set; }
         public LinkedListNode<SoundEmitter> Node { get; set; }
 
-        private ISoundManager _soundManager;
         private AudioSource _audioSource;
         private Coroutine _playingCoroutine;
 
         private void Awake()
         {
-            _audioSource = GetComponent<AudioSource>();
+            if (!TryGetComponent<AudioSource>(out _audioSource))
+            {
+                _audioSource = gameObject.AddComponent<AudioSource>();
+            }
         }
 
-        public void Initialize(SoundData data, ISoundManager soundManager)
+        public void Initialize(SoundData data)
         {
-            _soundManager = soundManager;
-            
             Data = data;
             _audioSource.clip = data.clip;
             _audioSource.outputAudioMixerGroup = data.mixerGroup;
@@ -64,7 +64,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
             _playingCoroutine = StartCoroutine(WaitForSoundToEnd());
         }
 
-        IEnumerator WaitForSoundToEnd()
+        private IEnumerator WaitForSoundToEnd()
         {
             yield return new WaitWhile(() => _audioSource.isPlaying);
             Stop();
@@ -79,7 +79,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
             }
 
             _audioSource.Stop();
-            _soundManager.ReturnToPool(this);
+            SoundManager.I.ReturnToPool(this);
         }
 
         public void WithRandomPitch(float min = -0.05f, float max = 0.05f)
