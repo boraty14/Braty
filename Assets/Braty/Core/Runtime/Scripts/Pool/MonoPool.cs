@@ -12,6 +12,8 @@ namespace Braty.Core.Runtime.Scripts.Pool
     {
         private static readonly Dictionary<Type, object> _monoPoolObjects = new();
 
+        public static void Init() => _monoPoolObjects.Clear();
+
         public static void LoadPool<T>(Transform poolParent, int initial, int max, bool collectionChecks) where T : MonoBehaviour
         {
             var monoPoolObjectKey = typeof(T);

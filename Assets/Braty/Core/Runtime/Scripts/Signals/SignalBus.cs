@@ -7,6 +7,8 @@ namespace Braty.Core.Runtime.Scripts.Signals
     {
         private static readonly Dictionary<Type, object> _actions = new();
 
+        public static void Init() => _actions.Clear();
+
         public static void Register<T>(Action<T> action)
         {
             var key = typeof(T);
