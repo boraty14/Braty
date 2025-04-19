@@ -10,7 +10,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
     {
         [SerializeField] private RectTransform _safeArea;
         [SerializeField] private RectTransform _normalArea;
-        
+
         private readonly Dictionary<Type, GameObject> _panels = new();
         public static PanelManager I { get; private set; }
 
@@ -24,21 +24,29 @@ namespace Braty.Core.Runtime.Scripts.Panels
         public event Action<PanelBase> OnPanelClosing;
         public event Action<PanelBase> OnPanelClosed;
 
-        public void ShowPanel<T>(bool isSafeArea) where T: PanelBase
+        public void ShowPanel<T>(bool isSafeArea) where T : PanelBase
         {
             var panelKey = typeof(T);
+            if (!_panels.ContainsKey(panelKey))
+            {
+                Debug.LogError($"Panel {panelKey} is not loaded can't show");
+                return;
+            }
+
             var newParent = isSafeArea ? _safeArea : _normalArea;
+
             StartCoroutine(ShowRoutine());
             return;
 
             IEnumerator ShowRoutine()
             {
-                if (!_panels.ContainsKey(panelKey))
+                var panel = GetPanel<T>();
+                if (panel.IsShown)
                 {
-                    yield return LoadPanel<T>(newParent);
+                    Debug.LogError($"Panel {panelKey} is already shown");
+                    yield break;
                 }
 
-                var panel = GetPanel<T>();
                 panel.RectTransform.SetParent(newParent, false);
                 OnPanelOpening?.Invoke(panel);
                 yield return panel.Show();
@@ -46,12 +54,12 @@ namespace Braty.Core.Runtime.Scripts.Panels
             }
         }
 
-        public void HidePanel<T>(bool unloadPanel) where T: PanelBase
+        public void HidePanel<T>(bool unloadPanel) where T : PanelBase
         {
-            var dynamicPanelKey = typeof(T);
-            if (!_panels.TryGetValue(dynamicPanelKey, out var dynamicPanelObject))
+            var panelKey = typeof(T);
+            if (!_panels.ContainsKey(panelKey))
             {
-                Debug.LogError($"Dynamic Panel {dynamicPanelKey} is not loaded can't hide");
+                Debug.LogError($"Dynamic Panel {panelKey} is not loaded can't hide");
                 return;
             }
 
@@ -60,13 +68,19 @@ namespace Braty.Core.Runtime.Scripts.Panels
 
             IEnumerator HideRoutine()
             {
-                var dynamicPanel = dynamicPanelObject.GetComponent<T>();
-                OnPanelClosing?.Invoke(dynamicPanel);
-                yield return dynamicPanel.Hide();
-                OnPanelClosed?.Invoke(dynamicPanel);
+                var panel = GetPanel<T>();
+                if (!panel.IsShown)
+                {
+                    Debug.LogError($"Panel {panelKey} is already not shown");
+                    yield break;
+                }
+
+                OnPanelClosing?.Invoke(panel);
+                yield return panel.Hide();
+                OnPanelClosed?.Invoke(panel);
                 if (unloadPanel)
                 {
-                    yield return UnloadPanel<T>();
+                    UnloadPanel<T>();
                 }
             }
         }
@@ -76,7 +90,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
             return _panels[typeof(T)].GetComponent<T>();
         }
 
-        private IEnumerator LoadPanel<T>(Transform newParent) where T : PanelBase
+        public IEnumerator LoadPanel<T>(Transform newParent) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (_panels.ContainsKey(panelKey))
@@ -92,13 +106,13 @@ namespace Braty.Core.Runtime.Scripts.Panels
             _panels.Add(panelKey, panelObject);
         }
 
-        private IEnumerator UnloadPanel<T>() where T: PanelBase
+        private void UnloadPanel<T>() where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.Remove(panelKey, out var panelObject))
             {
                 Debug.LogError($"Panel {panelKey} is not loaded can't unload");
-                yield break;
+                return;
             }
 
             Addressables.ReleaseInstance(panelObject);
