@@ -10,7 +10,7 @@ namespace Braty.Core.Runtime.Scripts.Assets
     public static class AssetLoader
     {
         private static readonly Dictionary<string, AsyncOperationHandle> _assetHandles = new();
-        private static readonly Dictionary<Type, AsyncOperationHandle> _monoHandles = new();
+        private static readonly Dictionary<Type, AsyncOperationHandle<GameObject>> _monoHandles = new();
 
         public static void Init()
         {
@@ -24,10 +24,10 @@ namespace Braty.Core.Runtime.Scripts.Assets
             {
                 yield break;
             }
-            
+
             var handle = Addressables.LoadAssetAsync<T>(key);
             yield return handle;
-            _assetHandles.TryAdd(key,handle);
+            _assetHandles.TryAdd(key, handle);
         }
 
         public static void UnloadAsset<T>(string key)
@@ -40,7 +40,7 @@ namespace Braty.Core.Runtime.Scripts.Assets
         {
             return (T)_assetHandles[key].Result;
         }
-        
+
         public static IEnumerator LoadMono<T>()
         {
             var key = typeof(T);
@@ -48,10 +48,10 @@ namespace Braty.Core.Runtime.Scripts.Assets
             {
                 yield break;
             }
-            
-            var handle = Addressables.LoadAssetAsync<T>(key);
+
+            var handle = Addressables.LoadAssetAsync<GameObject>(key.Name);
             yield return handle;
-            _monoHandles.TryAdd(key,handle);
+            _monoHandles.TryAdd(key, handle);
         }
 
         public static void UnloadMono<T>()
@@ -63,7 +63,8 @@ namespace Braty.Core.Runtime.Scripts.Assets
 
         public static T GetMonoInstance<T>(Transform monoParent = null) where T : MonoBehaviour
         {
-            return UnityEngine.Object.Instantiate((T)_monoHandles[typeof(T)].Result);
+            var mono = UnityEngine.Object.Instantiate(_monoHandles[typeof(T)].Result);
+            return mono.GetComponent<T>();
         }
     }
 }
