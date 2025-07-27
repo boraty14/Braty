@@ -17,6 +17,17 @@ namespace Braty.Core.Runtime.Scripts.Panels
         private void Awake()
         {
             I = this;
+            foreach (var panel in GetComponentsInChildren<PanelBase>(true))
+            {
+                var panelKey = panel.GetType();
+                if (_panels.ContainsKey(panelKey))
+                {
+                    Debug.LogError($"Panel {panelKey} already exists, can't register");
+                    continue;
+                }
+
+                _panels.TryAdd(panelKey, panel.gameObject);
+            }
         }
 
         public void ShowPanel<T>(bool isSafeArea) where T : PanelBase

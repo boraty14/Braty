@@ -32,7 +32,6 @@ namespace Braty.Core.Runtime.Scripts.Signals
             _actions[key] = (Action<T>)value - action;
         }
 
-
         public static void Invoke<T>(T arg)
         {
             var key = typeof(T);
