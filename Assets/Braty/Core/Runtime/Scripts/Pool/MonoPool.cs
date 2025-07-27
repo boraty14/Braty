@@ -14,7 +14,7 @@ namespace Braty.Core.Runtime.Scripts.Pool
 
         public static void Init() => _monoPoolObjects.Clear();
 
-        public static void LoadPool<T>(Transform poolParent, int initial, int max, bool collectionChecks) where T : MonoBehaviour
+        public static void LoadPool<T>(Transform poolParent, Action onLoaded = null, int initial = 10, int max = 100, bool collectionChecks = false) where T : MonoBehaviour
         {
             var monoPoolObjectKey = typeof(T);
 
@@ -51,6 +51,10 @@ namespace Braty.Core.Runtime.Scripts.Pool
                 );
 
                 _monoPoolObjects.TryAdd(monoPoolObjectKey, monoPoolObject);
+                if (onLoaded != null)
+                {
+                    onLoaded?.Invoke();
+                }
             }
         }
 
