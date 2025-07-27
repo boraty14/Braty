@@ -58,8 +58,6 @@ namespace Braty.Core.Runtime.Scripts.Pool
             }
         }
 
-
-
         public static T Get<T>() where T : MonoBehaviour
         {
             var monoPoolObject = (MonoPoolDefinition<T>)_monoPoolObjects[typeof(T)];
@@ -71,7 +69,6 @@ namespace Braty.Core.Runtime.Scripts.Pool
             var monoPoolObject = (MonoPoolDefinition<T>)_monoPoolObjects[typeof(T)];
             monoPoolObject.Pool.Release(obj);
         }
-
 
         private static T CreateSetup<T>() where T : MonoBehaviour
         {

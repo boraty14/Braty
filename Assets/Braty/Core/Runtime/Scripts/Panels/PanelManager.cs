@@ -19,11 +19,6 @@ namespace Braty.Core.Runtime.Scripts.Panels
             I = this;
         }
 
-        public event Action<PanelBase> OnPanelOpening;
-        public event Action<PanelBase> OnPanelOpened;
-        public event Action<PanelBase> OnPanelClosing;
-        public event Action<PanelBase> OnPanelClosed;
-
         public void ShowPanel<T>(bool isSafeArea) where T : PanelBase
         {
             var panelKey = typeof(T);
@@ -34,24 +29,10 @@ namespace Braty.Core.Runtime.Scripts.Panels
             }
 
             var newParent = isSafeArea ? _safeArea : _normalArea;
+            var panel = GetPanel<T>();
 
-            StartCoroutine(ShowRoutine());
-            return;
-
-            IEnumerator ShowRoutine()
-            {
-                var panel = GetPanel<T>();
-                if (panel.IsShown)
-                {
-                    Debug.LogError($"Panel {panelKey} is already shown");
-                    yield break;
-                }
-
-                panel.RectTransform.SetParent(newParent, false);
-                OnPanelOpening?.Invoke(panel);
-                yield return panel.Show();
-                OnPanelOpened?.Invoke(panel);
-            }
+            panel.GetComponent<RectTransform>().SetParent(newParent, false);
+            panel.gameObject.SetActive(true);
         }
 
         public void HidePanel<T>(bool unloadPanel) where T : PanelBase
@@ -63,25 +44,12 @@ namespace Braty.Core.Runtime.Scripts.Panels
                 return;
             }
 
-            StartCoroutine(HideRoutine());
-            return;
+            var panel = GetPanel<T>();
+            panel.gameObject.SetActive(false);
 
-            IEnumerator HideRoutine()
+            if (unloadPanel)
             {
-                var panel = GetPanel<T>();
-                if (!panel.IsShown)
-                {
-                    Debug.LogError($"Panel {panelKey} is already not shown");
-                    yield break;
-                }
-
-                OnPanelClosing?.Invoke(panel);
-                yield return panel.Hide();
-                OnPanelClosed?.Invoke(panel);
-                if (unloadPanel)
-                {
-                    UnloadPanel<T>();
-                }
+                UnloadPanel<T>();
             }
         }
 
@@ -90,7 +58,24 @@ namespace Braty.Core.Runtime.Scripts.Panels
             return _panels[typeof(T)].GetComponent<T>();
         }
 
-        public IEnumerator LoadPanel<T>(Transform newParent) where T : PanelBase
+        public bool IsPanelShown<T>()
+        {
+            var panelKey = typeof(T);
+            return IsPanelLoaded<T>() && _panels[panelKey].gameObject.activeInHierarchy;
+        }
+
+        public bool IsPanelLoaded<T>()
+        {
+            var panelKey = typeof(T);
+            return _panels.ContainsKey(panelKey);
+        }
+
+        public void LoadPanel<T>(Transform newParent, Action onComplete = null) where T : PanelBase
+        {
+            StartCoroutine(LoadPanelRoutine<T>(newParent, onComplete));
+        }
+
+        private IEnumerator LoadPanelRoutine<T>(Transform newParent, Action onComplete = null) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (_panels.ContainsKey(panelKey))
@@ -104,7 +89,9 @@ namespace Braty.Core.Runtime.Scripts.Panels
             var panelObject = panelHandle.Result;
             panelObject.SetActive(false);
             _panels.Add(panelKey, panelObject);
+            onComplete?.Invoke();
         }
+
 
         private void UnloadPanel<T>() where T : PanelBase
         {
