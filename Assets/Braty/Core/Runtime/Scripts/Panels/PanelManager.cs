@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Braty.Core.Runtime.Scripts.Panels
 {
@@ -83,26 +83,26 @@ namespace Braty.Core.Runtime.Scripts.Panels
 
         public void LoadPanel<T>(Transform newParent, Action onComplete = null) where T : PanelBase
         {
-            StartCoroutine(LoadPanelRoutine<T>(newParent, onComplete));
-        }
-
-        private IEnumerator LoadPanelRoutine<T>(Transform newParent, Action onComplete = null) where T : PanelBase
-        {
             var panelKey = typeof(T);
             if (_panels.ContainsKey(panelKey))
             {
                 Debug.LogError($"Panel {panelKey} is already loaded");
-                yield break;
+                onComplete?.Invoke();
+                return;
             }
 
             var panelHandle = Addressables.InstantiateAsync(typeof(T).Name, newParent);
-            yield return panelHandle;
-            var panelObject = panelHandle.Result;
-            panelObject.SetActive(false);
-            _panels.Add(panelKey, panelObject);
-            onComplete?.Invoke();
+            panelHandle.Completed += OnPanelLoaded;
+            
+            void OnPanelLoaded(AsyncOperationHandle<GameObject> obj)
+            {
+                panelHandle.Completed -= OnPanelLoaded;
+                var panelObject = panelHandle.Result;
+                panelObject.SetActive(false);
+                _panels.Add(panelKey, panelObject);
+                onComplete?.Invoke();
+            }
         }
-
 
         private void UnloadPanel<T>() where T : PanelBase
         {

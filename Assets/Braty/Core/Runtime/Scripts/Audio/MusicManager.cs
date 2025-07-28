@@ -15,6 +15,13 @@ namespace Braty.Core.Runtime.Scripts.Audio
         private AudioSource _current;
         private AudioSource _previous;
         private readonly Queue<AudioClip> _playlist = new();
+        
+        public static MusicManager I { get; private set; }
+
+        private void Awake()
+        {
+            I = this;
+        }
 
         private void Start()
         {
