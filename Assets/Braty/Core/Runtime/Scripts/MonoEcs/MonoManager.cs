@@ -6,42 +6,76 @@ namespace Braty.Core.Runtime.Scripts.MonoEcs
 {
     public static class MonoManager
     {
-        private static readonly Dictionary<Type, object> _activeMonos = new();
+        private static readonly Dictionary<Type, object> _units = new();
+        private static readonly Dictionary<Type, object> _singletons = new();
         
-        public static void Init() => _activeMonos.Clear();
-
-        public static IReadOnlyList<T> GetActiveMonos<T>() where T : MonoUnit
+        public static void Init()
         {
-            var monoType = typeof(T);
-            if (!_activeMonos.ContainsKey(monoType))
-            {
-                _activeMonos.TryAdd(monoType, new List<T>());
-            }
-
-            return (IReadOnlyList<T>)_activeMonos[monoType];
+            _units.Clear();
+            _singletons.Clear();
         }
         
-        internal static void AddActiveMono<T>(T monoInstance) where T : MonoUnit
+        public static T GetSingleton<T>() where T : MonoSingleton
+        {
+            var singletonType = typeof(T);
+            return (T)_singletons[singletonType];
+        }
+
+        internal static void AddSingleton<T>(T singleton) where T : MonoSingleton
+        {
+            var singletonType = typeof(T);
+            if (_singletons.ContainsKey(singletonType))
+            {
+                Debug.LogError($"Singleton {singletonType} is already registered");
+            }
+            _singletons[singletonType] = singleton;
+        }
+
+        internal static void RemoveSingleton<T>(T singleton) where T : MonoSingleton
+        {
+            var singletonType = typeof(T);
+            if (!_singletons.ContainsKey(singletonType))
+            {
+                Debug.LogError($"Singleton {singletonType} is not registered already");
+                return;
+            }
+
+            _singletons.Remove(singletonType);
+        }
+
+        
+        public static IReadOnlyList<T> GetUnits<T>() where T : MonoUnit
         {
             var monoType = typeof(T);
-            if (!_activeMonos.ContainsKey(monoType))
+            if (!_units.ContainsKey(monoType))
             {
-                _activeMonos.TryAdd(monoType, new List<T>());
+                _units.TryAdd(monoType, new List<T>());
+            }
+
+            return (IReadOnlyList<T>)_units[monoType];
+        }
+        
+        internal static void AddUnit<T>(T monoInstance) where T : MonoUnit
+        {
+            var monoType = typeof(T);
+            if (!_units.ContainsKey(monoType))
+            {
+                _units.TryAdd(monoType, new List<T>());
             }
             
-            ((List<T>)_activeMonos[monoType]).Add(monoInstance);
+            ((List<T>)_units[monoType]).Add(monoInstance);
         }
         
-        internal static void RemoveActiveMono<T>(T monoInstance) where T : MonoUnit
+        internal static void RemoveUnit<T>(T monoInstance) where T : MonoUnit
         {
             var monoType = typeof(T);
-            if (!_activeMonos.ContainsKey(monoType))
+            if (!_units.ContainsKey(monoType))
             {
                 Debug.LogError($"Mono list {monoType} is empty");
                 return;
             }
 
-            var monoList = (List<T>)_activeMonos[monoType];
+            var monoList = (List<T>)_units[monoType];
             int monoIndex = monoList.IndexOf(monoInstance);
             if (monoIndex < 0)
             {

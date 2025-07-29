@@ -2,16 +2,16 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.MonoEcs
 {
-    public abstract class MonoUnit : MonoBehaviour
+    public class MonoSingleton : MonoBehaviour
     {
         private void OnEnable()
         {
-            MonoManager.AddUnit(this);
+            MonoManager.AddSingleton(this);            
         }
 
         private void OnDisable()
         {
-            MonoManager.RemoveUnit(this);
+            MonoManager.RemoveSingleton(this);            
         }
     }
 }
