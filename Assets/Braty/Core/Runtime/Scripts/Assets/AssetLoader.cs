@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -11,24 +11,16 @@ namespace Braty.Core.Runtime.Scripts.Assets
 
         public static void Init() => _assetHandles.Clear();
 
-        public static void LoadAsset<T>(string key, Action onAssetLoaded)
+        public static async UniTask LoadAsset<T>(string key)
         {
             if (_assetHandles.ContainsKey(key))
             {
-                onAssetLoaded?.Invoke();
                 return;
             }
 
             var handle = Addressables.LoadAssetAsync<T>(key);
-            handle.Completed += OnAssetLoaded;
-
-            
-            void OnAssetLoaded(AsyncOperationHandle<T> asyncHandle)
-            {
-                handle.Completed -= OnAssetLoaded;
-                _assetHandles.TryAdd(key, handle);
-                onAssetLoaded?.Invoke();
-            }
+            await handle;
+            _assetHandles.TryAdd(key, handle);
         }
 
         public static void UnloadAsset<T>(string key)

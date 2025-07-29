@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -14,7 +14,7 @@ namespace Braty.Core.Runtime.Scripts.Scene
 
         public static void Init() => _handles.Clear();
         
-        public static void LoadSceneAsync(string sceneKey, Action<AsyncOperationHandle<SceneInstance>> onSceneLoaded = null)
+        public static async UniTask LoadSceneAsync(string sceneKey)
         {
             if (_handles.ContainsKey(sceneKey))
             {
@@ -23,11 +23,8 @@ namespace Braty.Core.Runtime.Scripts.Scene
             }
             
             var sceneLoadOperation = Addressables.LoadSceneAsync(sceneKey, LoadSceneMode.Additive);
-            sceneLoadOperation.Completed += handle => _handles.TryAdd(sceneKey, handle);
-            if (onSceneLoaded != null)
-            {
-                sceneLoadOperation.Completed += onSceneLoaded;
-            }
+            await sceneLoadOperation;
+            _handles.TryAdd(sceneKey, sceneLoadOperation);
         }
 
         public static void UnloadSceneAsync(string sceneKey)

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Pool;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
 
 namespace Braty.Core.Runtime.Scripts.Pool
@@ -13,7 +13,33 @@ namespace Braty.Core.Runtime.Scripts.Pool
         private static readonly Dictionary<Type, object> _monoPoolObjects = new();
         public static void Init() => _monoPoolObjects.Clear();
         
-        public static void LoadPool<T>(Transform poolParent, Action onLoaded = null, int initial = 10, int max = 100, bool collectionChecks = false) where T : MonoBehaviour
+        public static void LoadPool<T>(T prefab, Transform poolParent, int initial = 10, int max = 100, bool collectionChecks = false) where T : MonoBehaviour
+        {
+            var monoPoolObjectKey = typeof(T);
+
+            if (_monoPoolObjects.ContainsKey(monoPoolObjectKey))
+            {
+                Debug.LogError($"Asset {monoPoolObjectKey} already loaded");
+                return;
+            }
+            
+            var monoPoolObject = new MonoPoolDefinition<T>(
+                prefab,
+                new ObjectPool<T>(
+                    CreateSetup<T>,
+                    GetSetup<T>,
+                    ReleaseSetup<T>,
+                    DestroySetup<T>,
+                    collectionChecks,
+                    initial,
+                    max),
+                poolParent
+            );
+            
+            _monoPoolObjects.TryAdd(monoPoolObjectKey, monoPoolObject);
+        }
+        
+        public static async UniTask LoadPool<T>(Transform poolParent, int initial = 10, int max = 100, bool collectionChecks = false) where T : MonoBehaviour
         {
             var monoPoolObjectKey = typeof(T);
 
@@ -23,38 +49,28 @@ namespace Braty.Core.Runtime.Scripts.Pool
                 return;
             }
 
-            var asset = Addressables.LoadAssetAsync<GameObject>(monoPoolObjectKey.Name);
-            asset.Completed += OnPoolPrefabLoaded;
-            return;
-
-            void OnPoolPrefabLoaded(AsyncOperationHandle<GameObject> handle)
+            var assetHandle = Addressables.LoadAssetAsync<GameObject>(monoPoolObjectKey.Name);
+            await assetHandle;
+            if (!assetHandle.Result.TryGetComponent(out T prefab))
             {
-                asset.Completed -= OnPoolPrefabLoaded;
-                if (!handle.Result.TryGetComponent(out T prefab))
-                {
-                    Debug.LogError($"Asset {monoPoolObjectKey} does not contain component");
-                    return;
-                }
-
-                var monoPoolObject = new MonoPoolDefinition<T>(
-                    prefab,
-                    new ObjectPool<T>(
-                        CreateSetup<T>,
-                        GetSetup<T>,
-                        ReleaseSetup<T>,
-                        DestroySetup<T>,
-                        collectionChecks,
-                        initial,
-                        max),
-                    poolParent
-                );
-
-                _monoPoolObjects.TryAdd(monoPoolObjectKey, monoPoolObject);
-                if (onLoaded != null)
-                {
-                    onLoaded?.Invoke();
-                }
+                Debug.LogError($"Asset {monoPoolObjectKey} does not contain component");
+                return;
             }
+
+            var monoPoolObject = new MonoPoolDefinition<T>(
+                prefab,
+                new ObjectPool<T>(
+                    CreateSetup<T>,
+                    GetSetup<T>,
+                    ReleaseSetup<T>,
+                    DestroySetup<T>,
+                    collectionChecks,
+                    initial,
+                    max),
+                poolParent
+            );
+
+            _monoPoolObjects.TryAdd(monoPoolObjectKey, monoPoolObject);
         }
 
         public static T Get<T>() where T : MonoBehaviour
