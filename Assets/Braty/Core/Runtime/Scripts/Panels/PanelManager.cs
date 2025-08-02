@@ -8,9 +8,6 @@ namespace Braty.Core.Runtime.Scripts.Panels
 {
     public class PanelManager : MonoBehaviour
     {
-        [SerializeField] private RectTransform _safeArea;
-        [SerializeField] private RectTransform _normalArea;
-
         private readonly Dictionary<Type, GameObject> _panels = new();
         public static PanelManager I { get; private set; }
 
@@ -30,7 +27,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
             }
         }
 
-        public void ShowPanel<T>(bool isSafeArea) where T : PanelBase
+        public void ShowPanel<T>() where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.ContainsKey(panelKey))
@@ -39,10 +36,8 @@ namespace Braty.Core.Runtime.Scripts.Panels
                 return;
             }
 
-            var newParent = isSafeArea ? _safeArea : _normalArea;
             var panel = GetPanel<T>();
-
-            panel.GetComponent<RectTransform>().SetParent(newParent, false);
+            panel.transform.SetParent(transform, false);
             panel.gameObject.SetActive(true);
         }
 
