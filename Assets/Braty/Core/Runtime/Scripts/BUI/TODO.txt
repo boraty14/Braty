@@ -1,3 +1,4 @@
+add safe area?
 add scrollable
 add scroll pool
 add anchors?
