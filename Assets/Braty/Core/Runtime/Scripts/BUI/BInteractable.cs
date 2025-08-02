@@ -7,32 +7,32 @@ namespace Braty.Core.Runtime.Scripts.BUI
     {
         public int Priority;
 
-        public void MouseDownEvent()
+        public virtual void MouseDownEvent()
         {
             
         }
         
-        public void MouseDragEvent()
+        public virtual void MouseDragEvent()
         {
             
         }
         
-        public void MouseEnterEvent()
+        public virtual void MouseEnterEvent(Vector2 mousePosition)
         {
             
         }
         
-        public void MouseExitEvent()
+        public virtual void MouseExitEvent(Vector2 mousePosition)
         {
             
         }
         
-        public void MouseOverEvent()
+        public virtual void MouseOverEvent(Vector2 mousePosition)
         {
-            
+               
         }
 
-        public void MouseUpEvent()
+        public virtual void MouseUpEvent()
         {
             
         }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,13 +9,16 @@ namespace Braty.Core.Runtime.Scripts.BUI
         
         [SerializeField] private Camera _uiCamera;
         
-        private RaycastHit2D[] _hitResults = new RaycastHit2D[50];
-        // Cache the layer mask since it won't change
+        private readonly RaycastHit2D[] _hitResults = new RaycastHit2D[50];
+        private readonly List<BInteractable> _currentInteractables = new();
         private int _layerMask;
+        
+        private readonly List<BInteractable> _currentHovers = new();
+        private readonly Stack<BInteractable> _currentHoversRemoveStack = new();
+        
 
         private void Start()
         {
-            // Get the layer mask for the "BUI" layer
             _layerMask = LayerMask.GetMask(BConstants.UILayerName);
             if (_layerMask == 0)
             {
@@ -24,8 +28,6 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
         private void Update()
         {
-            // Get the mouse position from the new Input System
-            // Note: Mouse.current can be null if a mouse is not connected or active
             if (Mouse.current == null)
             {
                 return;
@@ -47,16 +49,50 @@ namespace Braty.Core.Runtime.Scripts.BUI
             int hitCount =
                 Physics2D.RaycastNonAlloc(ray.origin, ray.direction, _hitResults, Mathf.Infinity, _layerMask);
 
-            // Check if any objects were hit
+            // reset current interactables
+            _currentInteractables.Clear();
+            
+            // Check if any objects were hit, order them by priority
             if (hitCount > 0)
             {
-                // Iterate through the hits (up to hitCount)
                 for (int i = 0; i < hitCount; i++)
                 {
-                    // Access the hit information from the m_Results array
                     RaycastHit2D hit = _hitResults[i];
-                    Debug.Log("Hit object on BUI layer: " + hit.collider.gameObject.name);
+                    if(hit.collider.TryGetComponent<BInteractable>(out var interactable))
+                    {
+                        _currentInteractables.Add(interactable);
+                    }
                 }
+                // sort current interactables by prio
+                _currentInteractables.Sort((item1,item2) => item2.Priority.CompareTo(item1.Priority));
+            }
+            
+            foreach (var interactable in _currentInteractables)
+            {
+                // Mouse Enter
+                if (!_currentHovers.Contains(interactable))
+                {
+                    _currentHovers.Add(interactable);
+                    interactable.MouseEnterEvent(ray.origin);
+                }
+                // Mouse Over
+                interactable.MouseOverEvent(ray.origin);
+            }
+            
+            // Mouse Exit
+            _currentHoversRemoveStack.Clear();
+            foreach (var hover in _currentHovers)
+            {
+                if (!_currentInteractables.Contains(hover))
+                {
+                    hover.MouseExitEvent(ray.origin);
+                    _currentHoversRemoveStack.Push(hover);
+                }
+            }
+
+            while (_currentHoversRemoveStack.TryPop(out var hover))
+            {
+                _currentHovers.Remove(hover);
             }
         }
     }
