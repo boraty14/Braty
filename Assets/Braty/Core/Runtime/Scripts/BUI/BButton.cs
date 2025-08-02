@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.BUI
 {
+    [ExecuteAlways]
     public class BButton : BInteractable
     {
         public float ClickThreshold = 0.5f;
@@ -10,13 +11,22 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
         [Header("Animation Settings")]
         public bool IsAnimationEnabled;
-        public Vector2 AnimaitonScale = new Vector2(0.85f,0.85f);
+        public Vector2 AnimaitonScale = new Vector2(0.9f,0.9f);
 
 
         private float _mouseDownTime = 0f;
         private bool _isMouseDown = false;
 
         public event Action OnClick;
+
+        public virtual void OnEnable()
+        {
+            if (ButtonRenderer != null)
+            {
+                ButtonRenderer.sortingOrder = Priority;
+                ButtonRenderer.sortingLayerName = BConstants.UISortingLayerName;
+            }
+        }
 
         public override void MouseDownEvent(Vector2 mousePosition)
         {
