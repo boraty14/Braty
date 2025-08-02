@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.BUI
@@ -7,34 +8,42 @@ namespace Braty.Core.Runtime.Scripts.BUI
     {
         public int Priority;
 
+        public event Action<Vector2> OnMouseDownEvent;
+        public event Action<Vector2> OnMouseDragEvent;
+        public event Action<Vector2> OnMouseEnterEvent;
+        public event Action<Vector2> OnMouseExitEvent;
+        public event Action<Vector2> OnMouseOverEvent;
+        public event Action<Vector2> OnMouseUpEvent;
+
+
         public virtual void MouseDownEvent(Vector2 mousePosition)
         {
-            
+            OnMouseDownEvent?.Invoke(mousePosition);
         }
-        
+
         public virtual void MouseDragEvent(Vector2 mousePosition)
         {
-            
+            OnMouseDragEvent?.Invoke(mousePosition);
         }
-        
+
         public virtual void MouseEnterEvent(Vector2 mousePosition)
         {
-            
+            OnMouseEnterEvent?.Invoke(mousePosition);
         }
-        
+
         public virtual void MouseExitEvent(Vector2 mousePosition)
         {
-            
+            OnMouseExitEvent?.Invoke(mousePosition);
         }
-        
+
         public virtual void MouseOverEvent(Vector2 mousePosition)
         {
-               
+            OnMouseOverEvent?.Invoke(mousePosition);
         }
 
         public virtual void MouseUpEvent(Vector2 mousePosition)
         {
-            
+            OnMouseUpEvent?.Invoke(mousePosition);
         }
     }
 }
