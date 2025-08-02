@@ -6,7 +6,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
     [RequireComponent(typeof(Collider2D))]
     public abstract class BInteractable : MonoBehaviour
     {
-        public int Priority;
+        [SerializeField] private int _priority;
 
         public event Action<Vector2> OnMouseDownEvent;
         public event Action<Vector2> OnMouseDragEvent;
@@ -14,8 +14,21 @@ namespace Braty.Core.Runtime.Scripts.BUI
         public event Action<Vector2> OnMouseExitEvent;
         public event Action<Vector2> OnMouseOverEvent;
         public event Action<Vector2> OnMouseUpEvent;
+        public event Action<int> OnPriorityChanged; 
 
+        public int Priority => _priority;
 
+        public virtual void OnEnable()
+        {
+            SetPriority(Priority);
+        }
+
+        public virtual void SetPriority(int newPriority)
+        {
+            _priority = newPriority;
+            OnPriorityChanged?.Invoke(_priority);
+        }
+        
         public virtual void MouseDownEvent(Vector2 mousePosition)
         {
             OnMouseDownEvent?.Invoke(mousePosition);

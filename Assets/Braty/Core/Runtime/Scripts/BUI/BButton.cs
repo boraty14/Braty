@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.BUI
 {
-    [ExecuteAlways]
     public class BButton : BInteractable
     {
         public float ClickThreshold = 0.5f;
@@ -19,12 +18,12 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
         public event Action OnClick;
 
-        public virtual void OnEnable()
+        public override void SetPriority(int newPriority)
         {
+            base.SetPriority(newPriority);
             if (ButtonRenderer != null)
             {
-                ButtonRenderer.sortingOrder = Priority;
-                ButtonRenderer.sortingLayerName = BConstants.UISortingLayerName;
+                ButtonRenderer.sortingOrder = newPriority;
             }
         }
 
