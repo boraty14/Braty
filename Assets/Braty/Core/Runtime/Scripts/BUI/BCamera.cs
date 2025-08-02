@@ -16,6 +16,9 @@ namespace Braty.Core.Runtime.Scripts.BUI
         private readonly List<BInteractable> _currentHovers = new();
         private readonly Stack<BInteractable> _currentHoversRemoveStack = new();
         
+        private readonly List<BInteractable> _currentDrags = new();
+        private readonly Stack<BInteractable> _currentDragsRemoveStack = new();
+        
 
         private void Start()
         {
@@ -65,6 +68,23 @@ namespace Braty.Core.Runtime.Scripts.BUI
                 }
                 // sort current interactables by prio
                 _currentInteractables.Sort((item1,item2) => item2.Priority.CompareTo(item1.Priority));
+
+                // int find remove range index and remove them
+                int maxPriority = 0;
+                for (int i = 0; i < _currentInteractables.Count; i++)
+                {
+                    var interactable = _currentInteractables[i];
+                    if (i == 0)
+                    {
+                        maxPriority = interactable.Priority;
+                    }
+
+                    if (interactable.Priority < maxPriority)
+                    {
+                        _currentInteractables.RemoveRange(i,_currentInteractables.Count - i);
+                        break;
+                    }
+                }
             }
             
             foreach (var interactable in _currentInteractables)
@@ -77,6 +97,22 @@ namespace Braty.Core.Runtime.Scripts.BUI
                 }
                 // Mouse Over
                 interactable.MouseOverEvent(ray.origin);
+                
+                // Mouse Down
+                if (Mouse.current.leftButton.wasPressedThisFrame)
+                {
+                    interactable.MouseDownEvent(ray.origin);
+                }
+                // Mouse Drag
+                else if (Mouse.current.leftButton.isPressed)
+                {
+                    interactable.MouseDragEvent(ray.origin);
+                }
+                // Mouse Up
+                else if (Mouse.current.leftButton.wasReleasedThisFrame)
+                {
+                    interactable.MouseUpEvent(ray.origin);
+                }
             }
             
             // Mouse Exit
@@ -90,6 +126,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
                 }
             }
 
+            // remove exited items from hover/mouseover
             while (_currentHoversRemoveStack.TryPop(out var hover))
             {
                 _currentHovers.Remove(hover);

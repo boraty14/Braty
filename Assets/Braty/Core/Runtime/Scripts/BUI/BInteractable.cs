@@ -7,12 +7,12 @@ namespace Braty.Core.Runtime.Scripts.BUI
     {
         public int Priority;
 
-        public virtual void MouseDownEvent()
+        public virtual void MouseDownEvent(Vector2 mousePosition)
         {
             
         }
         
-        public virtual void MouseDragEvent()
+        public virtual void MouseDragEvent(Vector2 mousePosition)
         {
             
         }
@@ -32,7 +32,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
                
         }
 
-        public virtual void MouseUpEvent()
+        public virtual void MouseUpEvent(Vector2 mousePosition)
         {
             
         }
