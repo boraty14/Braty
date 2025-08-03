@@ -6,19 +6,21 @@ namespace Braty.Core.Runtime.Scripts.BUI
 {
     public class BCamera : MonoBehaviour
     {
-        
         [SerializeField] private Camera _uiCamera;
-        
+        [SerializeField] private Transform _uiParent;
+
         private readonly RaycastHit2D[] _hitResults = new RaycastHit2D[50];
         private readonly List<BInteractable> _currentInteractables = new();
         private int _layerMask;
-        
+
         private readonly List<BInteractable> _currentHovers = new();
         private readonly Stack<BInteractable> _currentHoversRemoveStack = new();
-        
+
         private readonly List<BInteractable> _currentDrags = new();
         private readonly Stack<BInteractable> _currentDragsRemoveStack = new();
-        
+
+        public float VerticalSize => _uiCamera.orthographicSize;
+        public Vector2 Resolution => new Vector2(16, 9);
 
         private void Start()
         {
@@ -47,27 +49,28 @@ namespace Braty.Core.Runtime.Scripts.BUI
             // Since we are dealing with a 2D-like orthographic view, we can define the ray
             // from the mouse world position, pointing "out" from the camera.
             Ray ray = new Ray(mouseWorldPosition, _uiCamera.transform.forward);
-            
+
             // Perform the non-allocating raycast
             int hitCount =
                 Physics2D.RaycastNonAlloc(ray.origin, ray.direction, _hitResults, Mathf.Infinity, _layerMask);
 
             // reset current interactables
             _currentInteractables.Clear();
-            
+
             // Check if any objects were hit, order them by priority
             if (hitCount > 0)
             {
                 for (int i = 0; i < hitCount; i++)
                 {
                     RaycastHit2D hit = _hitResults[i];
-                    if(hit.collider.TryGetComponent<BInteractable>(out var interactable))
+                    if (hit.collider.TryGetComponent<BInteractable>(out var interactable))
                     {
                         _currentInteractables.Add(interactable);
                     }
                 }
+
                 // sort current interactables by prio
-                _currentInteractables.Sort((item1,item2) => item2.Priority.CompareTo(item1.Priority));
+                _currentInteractables.Sort((item1, item2) => item2.Priority.CompareTo(item1.Priority));
 
                 // int find remove range index and remove them
                 int maxPriority = 0;
@@ -81,12 +84,12 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
                     if (interactable.Priority < maxPriority)
                     {
-                        _currentInteractables.RemoveRange(i,_currentInteractables.Count - i);
+                        _currentInteractables.RemoveRange(i, _currentInteractables.Count - i);
                         break;
                     }
                 }
             }
-            
+
             foreach (var interactable in _currentInteractables)
             {
                 // Mouse Enter
@@ -95,9 +98,10 @@ namespace Braty.Core.Runtime.Scripts.BUI
                     _currentHovers.Add(interactable);
                     interactable.MouseEnterEvent(ray.origin);
                 }
+
                 // Mouse Over
                 interactable.MouseOverEvent(ray.origin);
-                
+
                 // Mouse Down
                 if (Mouse.current.leftButton.wasPressedThisFrame)
                 {
@@ -114,7 +118,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
                     interactable.MouseUpEvent(ray.origin);
                 }
             }
-            
+
             // Mouse Exit
             _currentHoversRemoveStack.Clear();
             foreach (var hover in _currentHovers)
@@ -131,6 +135,12 @@ namespace Braty.Core.Runtime.Scripts.BUI
             {
                 _currentHovers.Remove(hover);
             }
+        }
+
+        public void SetSafeScale(Vector2 scale, Vector2 position)
+        {
+            _uiParent.localScale = new Vector3(scale.x, scale.y, 1f);
+            _uiParent.localPosition = new Vector3(position.x, position.y, _uiParent.localPosition.z);
         }
     }
 }
