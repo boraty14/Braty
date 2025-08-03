@@ -4,23 +4,37 @@ namespace Braty.Core.Runtime.Scripts.BUI
 {
     public class BSafeArea : MonoBehaviour
     {
-        public BCamera _bCamera;
+        [SerializeField] private BCamera _bCamera;
         public bool ApplySafeAreaX;
         public bool ApplySafeAreaY;
         
-        private Vector2 _screenSize;
+        private Vector2Int _screenSize;
         private Rect _safeArea;
         
         private void Start()
         {
-            _screenSize = new Vector2(Screen.width, Screen.height);
+            ApplySafeArea();
+        }
+
+        private void Update()
+        {
+            if (Screen.safeArea != _safeArea
+                || Screen.width != _screenSize.x
+                || Screen.height != _screenSize.y)
+            {
+                ApplySafeArea();
+            }
+        }
+
+        private void ApplySafeArea()
+        {
+            _screenSize = new Vector2Int(Screen.width, Screen.height);
             _safeArea = Screen.safeArea;
 
             var cameraPosition = _bCamera.transform.position;
             var cameraVerticalSize = _bCamera.VerticalSize;
 
-            Vector2 screenSize = _screenSize;
-            float rawWidth = cameraVerticalSize * (screenSize.x / screenSize.y) * 2f;
+            float rawWidth = cameraVerticalSize * ((float)_screenSize.x / _screenSize.y) * 2f;
             float rawHeight = cameraVerticalSize * 2f;
             float safeWidth = rawWidth;
             float safeHeight = rawHeight;
@@ -43,13 +57,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
             }
 
             var safePosition = cameraPosition + offset;
-            Debug.Log($"safe pos: {safePosition} safeScale = {new Vector2(safeWidth / rawWidth, safeHeight / rawHeight)}");
-            //
-            // var safeResolution = new Vector2(width, height);
-            // var safeScale = new Vector2(width/_bCamera.Resolution)
             _bCamera.SetSafeScale(new Vector2(safeWidth / rawWidth, safeHeight / rawHeight),safePosition);
-            //
-            // transform.position = cameraPosition + offset;
         }
     }
 }
