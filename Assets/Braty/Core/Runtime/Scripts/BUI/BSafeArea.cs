@@ -43,10 +43,11 @@ namespace Braty.Core.Runtime.Scripts.BUI
             }
 
             var safePosition = cameraPosition + offset;
+            Debug.Log($"safe pos: {safePosition} safeScale = {new Vector2(safeWidth / rawWidth, safeHeight / rawHeight)}");
             //
             // var safeResolution = new Vector2(width, height);
             // var safeScale = new Vector2(width/_bCamera.Resolution)
-            _bCamera.SetSafeScale(new Vector2(safeWidth, safeHeight),safePosition);
+            _bCamera.SetSafeScale(new Vector2(safeWidth / rawWidth, safeHeight / rawHeight),safePosition);
             //
             // transform.position = cameraPosition + offset;
         }

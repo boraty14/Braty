@@ -20,7 +20,6 @@ namespace Braty.Core.Runtime.Scripts.BUI
         private readonly Stack<BInteractable> _currentDragsRemoveStack = new();
 
         public float VerticalSize => _uiCamera.orthographicSize;
-        public Vector2 Resolution => new Vector2(16, 9);
 
         private void Start()
         {
