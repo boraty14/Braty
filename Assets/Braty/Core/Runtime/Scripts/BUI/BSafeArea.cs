@@ -31,7 +31,6 @@ namespace Braty.Core.Runtime.Scripts.BUI
             _screenSize = new Vector2Int(Screen.width, Screen.height);
             _safeArea = Screen.safeArea;
 
-            var cameraPosition = _bCamera.transform.position;
             var cameraVerticalSize = _bCamera.VerticalSize;
 
             float rawWidth = cameraVerticalSize * ((float)_screenSize.x / _screenSize.y) * 2f;
@@ -56,8 +55,9 @@ namespace Braty.Core.Runtime.Scripts.BUI
                 safeHeight *= 1 - (bottomRatio + topRatio);
             }
 
-            var safePosition = cameraPosition + offset;
-            _bCamera.SetSafeScale(new Vector2(safeWidth / rawWidth, safeHeight / rawHeight),safePosition);
+            var safeScale = new Vector2(safeWidth / rawWidth, safeHeight / rawHeight);
+            transform.localScale = new Vector3(safeScale.x, safeScale.y, 1f);
+            transform.position = new Vector3(offset.x, offset.y, transform.position.z);
         }
     }
 }

@@ -859,6 +859,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 839784890}
+  - component: {fileID: 839784891}
   m_Layer: 0
   m_Name: UIParent
   m_TagString: Untagged
@@ -874,7 +875,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 839784889}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -882,8 +883,23 @@ Transform:
   - {fileID: 886824345}
   - {fileID: 1442551465}
   - {fileID: 222493530}
-  m_Father: {fileID: 1374670009}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &839784891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839784889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d118a5ca4fbb498d91d9fe3f992c2e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bCamera: {fileID: 1374670010}
+  ApplySafeAreaX: 1
+  ApplySafeAreaY: 1
 --- !u!1 &886824343
 GameObject:
   m_ObjectHideFlags: 0
@@ -1081,7 +1097,6 @@ GameObject:
   - component: {fileID: 1374670007}
   - component: {fileID: 1374670006}
   - component: {fileID: 1374670010}
-  - component: {fileID: 1374670011}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -1204,8 +1219,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 839784890}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1374670010
@@ -1221,22 +1235,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiCamera: {fileID: 1374670008}
-  _uiParent: {fileID: 839784890}
---- !u!114 &1374670011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1374670005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d118a5ca4fbb498d91d9fe3f992c2e28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bCamera: {fileID: 1374670010}
-  ApplySafeAreaX: 1
-  ApplySafeAreaY: 1
 --- !u!1 &1442551462
 GameObject:
   m_ObjectHideFlags: 0
@@ -1776,5 +1774,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1374670009}
+  - {fileID: 839784890}
   - {fileID: 662360743}
   - {fileID: 160960077}

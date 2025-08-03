@@ -7,7 +7,6 @@ namespace Braty.Core.Runtime.Scripts.BUI
     public class BCamera : MonoBehaviour
     {
         [SerializeField] private Camera _uiCamera;
-        [SerializeField] private Transform _uiParent;
 
         private readonly RaycastHit2D[] _hitResults = new RaycastHit2D[50];
         private readonly List<BInteractable> _currentInteractables = new();
@@ -134,12 +133,6 @@ namespace Braty.Core.Runtime.Scripts.BUI
             {
                 _currentHovers.Remove(hover);
             }
-        }
-
-        public void SetSafeScale(Vector2 scale, Vector2 position)
-        {
-            _uiParent.localScale = new Vector3(scale.x, scale.y, 1f);
-            _uiParent.localPosition = new Vector3(position.x, position.y, _uiParent.localPosition.z);
         }
     }
 }
