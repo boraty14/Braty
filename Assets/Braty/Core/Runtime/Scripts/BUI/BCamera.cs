@@ -1,14 +1,16 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Braty.Core.Runtime.Scripts.BUI
 {
+    [RequireComponent(typeof(Camera))]
     public class BCamera : MonoBehaviour
     {
-        [SerializeField] private Camera _uiCamera;
         [SerializeField] private Vector2Int _targetRatio = new Vector2Int(16,9);
 
+        private Camera _uiCamera;
         private readonly RaycastHit2D[] _hitResults = new RaycastHit2D[50];
         private readonly List<BInteractable> _currentInteractables = new();
         private int _layerMask;
@@ -22,9 +24,10 @@ namespace Braty.Core.Runtime.Scripts.BUI
         public float VerticalSize => _uiCamera.orthographicSize;
 
         private Vector2Int _screenSize;
-        
-        private void Start()
+
+        private void Awake()
         {
+            _uiCamera = GetComponent<Camera>();
             _layerMask = LayerMask.GetMask(BConstants.UILayerName);
             if (_layerMask == 0)
             {

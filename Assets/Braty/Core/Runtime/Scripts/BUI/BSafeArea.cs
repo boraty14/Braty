@@ -56,7 +56,8 @@ namespace Braty.Core.Runtime.Scripts.BUI
             }
 
             var safeScale = new Vector2(safeWidth / rawWidth, safeHeight / rawHeight);
-            transform.localScale = new Vector3(safeScale.x, safeScale.y, 1f);
+            var smallestScale = Mathf.Min(safeScale.x, safeScale.y);
+            transform.localScale = new Vector3(smallestScale, smallestScale, 1f);
             transform.position = new Vector3(offset.x, offset.y, transform.position.z);
         }
     }
