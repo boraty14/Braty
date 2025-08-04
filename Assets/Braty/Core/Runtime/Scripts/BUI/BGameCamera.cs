@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.BUI
