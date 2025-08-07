@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.MonoEcs
 {
-    public class MonoSingleton : MonoBehaviour
+    public abstract class MonoSingleton : MonoBehaviour
     {
         private void OnEnable()
         {
