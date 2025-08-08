@@ -12,13 +12,5 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
         public SpriteMask SpriteMask => _spriteMask;
         public BScrollDirection ScrollDirection => _scrollDirection;
-
-        public override void SetPriority(int newPriority)
-        {
-            _spriteMask.isCustomRangeActive = true;
-            _spriteMask.frontSortingOrder = Priority;
-            _spriteMask.backSortingOrder = Priority - 1;
-            base.SetPriority(newPriority);
-        }
     }
 }

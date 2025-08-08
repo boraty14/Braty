@@ -18,15 +18,6 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
         public event Action OnClick;
 
-        public override void SetPriority(int newPriority)
-        {
-            if (ButtonRenderer != null)
-            {
-                ButtonRenderer.sortingOrder = newPriority;
-            }
-            base.SetPriority(newPriority);
-        }
-
         public override void MouseDownEvent(Vector2 mousePosition)
         {
             base.MouseDownEvent(mousePosition);

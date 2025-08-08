@@ -24,7 +24,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
             SetPriority(Priority);
         }
 
-        public virtual void SetPriority(int newPriority)
+        public void SetPriority(int newPriority)
         {
             _priority = newPriority;
             OnPriorityChanged?.Invoke(_priority);
