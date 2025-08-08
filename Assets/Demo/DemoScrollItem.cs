@@ -1,4 +1,4 @@
-using Braty.Core.Runtime.Scripts.BUI;
+using Braty.Core.Runtime.Scripts.BUI.Core;
 
 namespace Demo
 {

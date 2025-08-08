@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Braty.Core.Runtime.Scripts.BUI
+namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     [RequireComponent(typeof(Camera))]
     [DisallowMultipleComponent]
@@ -101,7 +101,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
                 // Mouse Over
                 interactable.MouseOverEvent(ray.origin);
-
+                
                 // Mouse Down
                 if (Mouse.current.leftButton.wasPressedThisFrame)
                 {
@@ -116,6 +116,12 @@ namespace Braty.Core.Runtime.Scripts.BUI
                 else if (Mouse.current.leftButton.wasReleasedThisFrame)
                 {
                     interactable.MouseUpEvent(ray.origin);
+                }
+                
+                // Right Click
+                if (Mouse.current.rightButton.wasPressedThisFrame)
+                {
+                    interactable.RightClickEvent(ray.origin);
                 }
             }
 

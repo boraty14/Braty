@@ -1,4 +1,4 @@
-namespace Braty.Core.Runtime.Scripts.BUI
+namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     public enum BScrollDirection
     {

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Braty.Core.Runtime.Scripts.BUI
+namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     public class BButton : BInteractable
     {
@@ -17,7 +17,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
         private bool _isMouseDown = false;
 
         public event Action OnClick;
-
+ 
         public override void MouseDownEvent(Vector2 mousePosition)
         {
             base.MouseDownEvent(mousePosition);

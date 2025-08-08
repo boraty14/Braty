@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Braty.Core.Runtime.Scripts.BUI
+namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     [DisallowMultipleComponent]
     public class BSafeArea : MonoBehaviour

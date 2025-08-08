@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Braty.Core.Runtime.Scripts.BUI
+namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     public abstract class BScrollItemView<T> : MonoBehaviour where T : BScrollItem
     {

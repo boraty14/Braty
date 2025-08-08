@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Braty.Core.Runtime.Scripts.BUI
+namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(SpriteMask))]
