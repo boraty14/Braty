@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.BUI
 {
+    [DisallowMultipleComponent]
     public class BSafeArea : MonoBehaviour
     {
         [SerializeField] private BCamera _bCamera;

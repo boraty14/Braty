@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Braty.Core.Runtime.Scripts.BUI
 {
     [RequireComponent(typeof(Collider2D))]
+    [DisallowMultipleComponent]
     public abstract class BInteractable : MonoBehaviour
     {
         [SerializeField] private int _priority;
