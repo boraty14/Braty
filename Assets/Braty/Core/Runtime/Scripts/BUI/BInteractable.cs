@@ -19,7 +19,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
         public int Priority => _priority;
 
-        public virtual void OnEnable()
+        public virtual void Start()
         {
             SetPriority(Priority);
         }
