@@ -20,7 +20,7 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 
         public int Priority => _priority;
 
-        public virtual void Start()
+        protected virtual void Start()
         {
             SetPriority(Priority);
         }

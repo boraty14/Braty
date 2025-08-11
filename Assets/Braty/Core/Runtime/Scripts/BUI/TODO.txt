@@ -3,6 +3,8 @@ add scroll pool
 add scroll inertia
 add scroll view offsets start/end horizontal/vertical
 
+separate PRIO and RENDER
+
 make layer ordering automatic?????????
 make it more intuitive
 
