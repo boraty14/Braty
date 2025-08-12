@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
+using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
 using UnityEngine.Pool;
 
 namespace Braty.Core.Runtime.Scripts.Audio
 {
-    public class SoundManager : MonoBehaviour
+    public class SoundManager : MonoSystem
     {
         [SerializeField] SoundEmitter soundEmitterPrefab;
         [SerializeField] bool collectionCheck = true;
@@ -16,13 +16,6 @@ namespace Braty.Core.Runtime.Scripts.Audio
         private IObjectPool<SoundEmitter> _soundEmitterPool;
         private readonly List<SoundEmitter> _activeSoundEmitters = new();
         public readonly LinkedList<SoundEmitter> FrequentSoundEmitters = new();
-        
-        public static SoundManager I { get; private set; }
-
-        private void Awake()
-        {
-            I = this;
-        }
 
         private void Start()
         {

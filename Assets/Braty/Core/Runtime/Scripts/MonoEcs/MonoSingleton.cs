@@ -4,12 +4,12 @@ namespace Braty.Core.Runtime.Scripts.MonoEcs
 {
     public abstract class MonoSingleton : MonoBehaviour
     {
-        private void OnEnable()
+        private void Awake()
         {
             MonoManager.AddSingleton(this);            
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             MonoManager.RemoveSingleton(this);            
         }

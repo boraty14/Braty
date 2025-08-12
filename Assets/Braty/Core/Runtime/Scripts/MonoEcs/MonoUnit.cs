@@ -4,12 +4,14 @@ namespace Braty.Core.Runtime.Scripts.MonoEcs
 {
     public abstract class MonoUnit : MonoBehaviour
     {
-        private void OnEnable()
+        public bool IsActive;
+        
+        private void Awake()
         {
             MonoManager.AddUnit(this);
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             MonoManager.RemoveUnit(this);
         }

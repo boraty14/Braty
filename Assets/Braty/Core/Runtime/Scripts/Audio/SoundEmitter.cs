@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -79,7 +80,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
             }
 
             _audioSource.Stop();
-            SoundManager.I.ReturnToPool(this);
+            MonoManager.GetSystem<SoundManager>().ReturnToPool(this);
         }
 
         public void WithRandomPitch(float min = -0.05f, float max = 0.05f)

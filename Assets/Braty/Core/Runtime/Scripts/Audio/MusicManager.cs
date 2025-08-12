@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
 using UnityEngine.Audio;
 
 namespace Braty.Core.Runtime.Scripts.Audio
 {
     [RequireComponent(typeof(AudioSource))]
-    public class MusicManager : MonoBehaviour
+    public class MusicManager : MonoSystem
     {
         [SerializeField] private List<AudioClip> _initialPlaylist;
         [SerializeField] private AudioMixerGroup _musicMixerGroup;
@@ -16,13 +17,6 @@ namespace Braty.Core.Runtime.Scripts.Audio
         private AudioSource _previous;
         private readonly Queue<AudioClip> _playlist = new();
         
-        public static MusicManager I { get; private set; }
-
-        private void Awake()
-        {
-            I = this;
-        }
-
         private void Start()
         {
             foreach (var clip in _initialPlaylist)

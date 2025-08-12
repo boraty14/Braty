@@ -1,6 +1,7 @@
+using Braty.Core.Runtime.Scripts.MonoEcs;
+
 namespace Braty.Core.Runtime.Scripts.Utils
 {
-    using System;
     using UnityEngine;
     using UnityEngine.Pool;
 
@@ -10,21 +11,24 @@ namespace Braty.Core.Runtime.Scripts.Utils
     /// If you enjoyed the video or this script, make sure you give me a like on YT and let me know what you thought :)
     /// </summary>
     /// <typeparam name="T">A MonoBehaviour object you'd like to perform pooling on.</typeparam>
-    public abstract class PoolerBase<T> : MonoBehaviour where T : MonoBehaviour 
+    public abstract class PoolerBase<T> : MonoSystem where T : MonoBehaviour 
     {
-        private T _prefab;
-        private ObjectPool<T> _pool;
+        [SerializeField] private T _prefab;
+        protected ObjectPool<T> Pool { get; private set; }
 
-        private ObjectPool<T> Pool {
-            get {
-                if (_pool == null) throw new InvalidOperationException("You need to call InitPool before using it.");
-                return _pool;
-            }
-            set => _pool = value;
+        protected override void Awake()
+        {
+            base.Awake();
+            InitPool();
         }
 
-        protected void InitPool(T prefab, int initial = 10, int max = 20, bool collectionChecks = false) {
-            _prefab = prefab;
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Pool?.Dispose();
+        }
+
+        protected void InitPool(int initial = 10, int max = 20, bool collectionChecks = false) {
             Pool = new ObjectPool<T>(
                 CreateSetup,
                 GetSetup,

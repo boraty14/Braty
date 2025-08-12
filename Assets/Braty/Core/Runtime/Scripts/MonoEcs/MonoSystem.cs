@@ -4,14 +4,14 @@ namespace Braty.Core.Runtime.Scripts.MonoEcs
 {
     public abstract class MonoSystem : MonoBehaviour
     {
-        protected virtual void OnEnable()
+        protected virtual void Awake()
         {
-            MonoSystemManager.AddSystem(this);            
+            MonoManager.AddSystem(this);            
         }
 
-        protected virtual void OnDisable()
+        protected virtual void OnDestroy()
         {
-            MonoSystemManager.RemoveSystem(this);            
+            MonoManager.RemoveSystem(this);            
         }
     }
 }

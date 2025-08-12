@@ -1,33 +1,18 @@
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace Braty.Core.Runtime.Scripts.Panels
 {
-    public class PanelManager : MonoBehaviour
+    public class PanelManager : MonoSystem
     {
-        private readonly Dictionary<Type, GameObject> _panels = new();
-        public static PanelManager I { get; private set; }
+        [SerializeField] private RectTransform _normalArea;
+        [SerializeField] private RectTransform _safeArea;
+        
+        private readonly Dictionary<Type, PanelBase> _panels = new();
 
-        private void Awake()
-        {
-            I = this;
-            foreach (var panel in GetComponentsInChildren<PanelBase>(true))
-            {
-                var panelKey = panel.GetType();
-                if (_panels.ContainsKey(panelKey))
-                {
-                    Debug.LogError($"Panel {panelKey} already exists, can't register");
-                    continue;
-                }
-
-                _panels.TryAdd(panelKey, panel.gameObject);
-            }
-        }
-
-        public void ShowPanel<T>() where T : PanelBase
+        public void ShowPanel<T>(bool isSafeArea) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.ContainsKey(panelKey))
@@ -37,11 +22,12 @@ namespace Braty.Core.Runtime.Scripts.Panels
             }
 
             var panel = GetPanel<T>();
-            panel.transform.SetParent(transform, false);
+            var parent = isSafeArea ? _safeArea : _normalArea;
+            panel.transform.SetParent(parent, false);
             panel.gameObject.SetActive(true);
         }
 
-        public void HidePanel<T>(bool unloadPanel) where T : PanelBase
+        public void HidePanel<T>() where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.ContainsKey(panelKey))
@@ -52,11 +38,6 @@ namespace Braty.Core.Runtime.Scripts.Panels
 
             var panel = GetPanel<T>();
             panel.gameObject.SetActive(false);
-
-            if (unloadPanel)
-            {
-                UnloadPanel<T>();
-            }
         }
 
         public T GetPanel<T>()
@@ -76,7 +57,18 @@ namespace Braty.Core.Runtime.Scripts.Panels
             return _panels.ContainsKey(panelKey);
         }
 
-        public async UniTask LoadPanel<T>(Transform newParent) where T : PanelBase
+        public void DestroyPanel<T>() where T : PanelBase
+        {
+            var panelKey = typeof(T);
+            if (!_panels.ContainsKey(panelKey))
+            {
+                Debug.LogError($"Panel {panelKey} is not loaded can't destroy");
+                return;
+            }
+            Destroy(_panels[panelKey].gameObject);
+        }
+
+        internal void AddPanel<T>(T panel) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (_panels.ContainsKey(panelKey))
@@ -85,12 +77,10 @@ namespace Braty.Core.Runtime.Scripts.Panels
                 return;
             }
 
-            var panelObject = await Addressables.InstantiateAsync(typeof(T).Name, newParent).Task;
-            _panels.Add(panelKey, panelObject);
-            HidePanel<T>(false);
+            _panels.Add(panelKey, panel);
         }
 
-        private void UnloadPanel<T>() where T : PanelBase
+        internal void RemovePanel<T>(T panel) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.Remove(panelKey, out var panelObject))
@@ -98,8 +88,6 @@ namespace Braty.Core.Runtime.Scripts.Panels
                 Debug.LogError($"Panel {panelKey} is not loaded can't unload");
                 return;
             }
-
-            Addressables.ReleaseInstance(panelObject);
         }
     }
 }
