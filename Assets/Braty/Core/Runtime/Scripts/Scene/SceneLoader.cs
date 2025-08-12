@@ -23,7 +23,7 @@ namespace Braty.Core.Runtime.Scripts.Scene
             }
             
             var sceneLoadOperation = Addressables.LoadSceneAsync(sceneKey, LoadSceneMode.Additive);
-            await sceneLoadOperation;
+            await sceneLoadOperation.Task.AsUniTask();
             _handles.TryAdd(sceneKey, sceneLoadOperation);
         }
 
