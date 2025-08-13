@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -13,6 +14,9 @@ namespace Braty.Core.Runtime.Scripts.Scene
         private static readonly Dictionary<string, AsyncOperationHandle<SceneInstance>> _handles = new();
 
         public static void Init() => _handles.Clear();
+
+        public static event Action<string> OnSceneLoaded;
+        public static event Action<string> OnSceneUnloaded;
         
         public static async UniTask LoadSceneAsync(string sceneKey)
         {
@@ -25,6 +29,7 @@ namespace Braty.Core.Runtime.Scripts.Scene
             var sceneLoadOperation = Addressables.LoadSceneAsync(sceneKey, LoadSceneMode.Additive);
             await sceneLoadOperation.Task.AsUniTask();
             _handles.TryAdd(sceneKey, sceneLoadOperation);
+            OnSceneLoaded?.Invoke(sceneKey);
         }
 
         public static void UnloadSceneAsync(string sceneKey)
@@ -36,6 +41,7 @@ namespace Braty.Core.Runtime.Scripts.Scene
             }
             Addressables.UnloadSceneAsync(handle);
             _handles.Remove(sceneKey);
+            OnSceneUnloaded?.Invoke(sceneKey);
         }
         
         public static bool IsSceneLoaded(string sceneKey)

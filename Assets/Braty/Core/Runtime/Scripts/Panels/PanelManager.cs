@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
-using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.Panels
 {
-    public class PanelManager : MonoSystem
+    public static class PanelManager
     {
-        [SerializeField] private RectTransform _normalArea;
-        [SerializeField] private RectTransform _safeArea;
-        
-        private readonly Dictionary<Type, PanelBase> _panels = new();
+        private static readonly Dictionary<Type, PanelBase> _panels = new();
 
-        public void ShowPanel<T>(bool isSafeArea) where T : PanelBase
+        public static void Init() => _panels.Clear();
+
+        public static void ShowPanel<T>(bool isSafeArea) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.ContainsKey(panelKey))
@@ -22,12 +20,10 @@ namespace Braty.Core.Runtime.Scripts.Panels
             }
 
             var panel = GetPanel<T>();
-            var parent = isSafeArea ? _safeArea : _normalArea;
-            panel.transform.SetParent(parent, false);
             panel.gameObject.SetActive(true);
         }
 
-        public void HidePanel<T>() where T : PanelBase
+        public static void HidePanel<T>() where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.ContainsKey(panelKey))
@@ -40,35 +36,24 @@ namespace Braty.Core.Runtime.Scripts.Panels
             panel.gameObject.SetActive(false);
         }
 
-        public T GetPanel<T>()
+        public static T GetPanel<T>()
         {
             return _panels[typeof(T)].GetComponent<T>();
         }
 
-        public bool IsPanelShown<T>()
+        public static bool IsPanelShown<T>()
         {
             var panelKey = typeof(T);
             return IsPanelLoaded<T>() && _panels[panelKey].gameObject.activeInHierarchy;
         }
 
-        public bool IsPanelLoaded<T>()
+        public static bool IsPanelLoaded<T>()
         {
             var panelKey = typeof(T);
             return _panels.ContainsKey(panelKey);
         }
 
-        public void DestroyPanel<T>() where T : PanelBase
-        {
-            var panelKey = typeof(T);
-            if (!_panels.ContainsKey(panelKey))
-            {
-                Debug.LogError($"Panel {panelKey} is not loaded can't destroy");
-                return;
-            }
-            Destroy(_panels[panelKey].gameObject);
-        }
-
-        internal void AddPanel<T>(T panel) where T : PanelBase
+        internal static void AddPanel<T>(T panel) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (_panels.ContainsKey(panelKey))
@@ -78,9 +63,10 @@ namespace Braty.Core.Runtime.Scripts.Panels
             }
 
             _panels.Add(panelKey, panel);
+            HidePanel<T>();
         }
 
-        internal void RemovePanel<T>(T panel) where T : PanelBase
+        internal static void RemovePanel<T>(T panel) where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.Remove(panelKey, out var panelObject))
