@@ -5,7 +5,7 @@ using UnityEngine.Pool;
 
 namespace Braty.Core.Runtime.Scripts.Audio
 {
-    public class SoundManager : MonoSystem
+    public class SoundSystem : MonoSystem
     {
         [SerializeField] SoundEmitter soundEmitterPrefab;
         [SerializeField] bool collectionCheck = true;

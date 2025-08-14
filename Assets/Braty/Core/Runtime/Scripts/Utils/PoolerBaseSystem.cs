@@ -11,7 +11,7 @@ namespace Braty.Core.Runtime.Scripts.Utils
     /// If you enjoyed the video or this script, make sure you give me a like on YT and let me know what you thought :)
     /// </summary>
     /// <typeparam name="T">A MonoBehaviour object you'd like to perform pooling on.</typeparam>
-    public abstract class PoolerBase<T> : MonoSystem where T : MonoBehaviour 
+    public abstract class PoolerBaseSystem<T> : MonoSystem where T : MonoBehaviour 
     {
         [SerializeField] private T _prefab;
         protected ObjectPool<T> Pool { get; private set; }

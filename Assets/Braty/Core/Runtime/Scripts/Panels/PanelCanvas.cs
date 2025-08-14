@@ -11,7 +11,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
         private void Start()
         {
             _canvas = GetComponent<Canvas>();
-            _canvas.worldCamera = MonoManager.GetSystem<PanelCamera>().Camera;
+            _canvas.worldCamera = MonoManager.GetSystem<PanelCameraSystem>().Camera;
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Braty.Core.Runtime.Scripts.Panels
 {
     [RequireComponent(typeof(Camera))]
-    public class PanelCamera : MonoSystem
+    public class PanelCameraSystem : MonoSystem
     {
         private Camera _camera;
         public Camera Camera => _camera;

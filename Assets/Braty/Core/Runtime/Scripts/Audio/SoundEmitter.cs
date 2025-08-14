@@ -80,7 +80,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
             }
 
             _audioSource.Stop();
-            MonoManager.GetSystem<SoundManager>().ReturnToPool(this);
+            MonoManager.GetSystem<SoundSystem>().ReturnToPool(this);
         }
 
         public void WithRandomPitch(float min = -0.05f, float max = 0.05f)

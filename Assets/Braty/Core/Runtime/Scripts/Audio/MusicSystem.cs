@@ -6,7 +6,7 @@ using UnityEngine.Audio;
 namespace Braty.Core.Runtime.Scripts.Audio
 {
     [RequireComponent(typeof(AudioSource))]
-    public class MusicManager : MonoSystem
+    public class MusicSystem : MonoSystem
     {
         [SerializeField] private List<AudioClip> _initialPlaylist;
         [SerializeField] private AudioMixerGroup _musicMixerGroup;

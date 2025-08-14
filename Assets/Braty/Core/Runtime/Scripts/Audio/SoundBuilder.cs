@@ -4,13 +4,13 @@ namespace Braty.Core.Runtime.Scripts.Audio
 {
     public class SoundBuilder
     {
-        private readonly SoundManager _soundManager;
+        private readonly SoundSystem _soundSystem;
         private Vector3 _position = Vector3.zero;
         private bool _randomPitch;
 
-        public SoundBuilder(SoundManager soundManager)
+        public SoundBuilder(SoundSystem soundSystem)
         {
-            _soundManager = soundManager;
+            _soundSystem = soundSystem;
         }
 
         public SoundBuilder WithPosition(Vector3 position)
@@ -33,12 +33,12 @@ namespace Braty.Core.Runtime.Scripts.Audio
                 return;
             }
 
-            if (!_soundManager.CanPlaySound(soundData)) return;
+            if (!_soundSystem.CanPlaySound(soundData)) return;
 
-            SoundEmitter soundEmitter = _soundManager.Get();
+            SoundEmitter soundEmitter = _soundSystem.Get();
             soundEmitter.Initialize(soundData);
             soundEmitter.transform.position = _position;
-            soundEmitter.transform.parent = _soundManager.transform;
+            soundEmitter.transform.parent = _soundSystem.transform;
 
             if (_randomPitch)
             {
@@ -47,7 +47,7 @@ namespace Braty.Core.Runtime.Scripts.Audio
 
             if (soundData.frequentSound)
             {
-                soundEmitter.Node = _soundManager.FrequentSoundEmitters.AddLast(soundEmitter);
+                soundEmitter.Node = _soundSystem.FrequentSoundEmitters.AddLast(soundEmitter);
             }
 
             soundEmitter.Play();
