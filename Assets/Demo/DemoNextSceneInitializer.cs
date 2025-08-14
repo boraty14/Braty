@@ -1,11 +1,10 @@
-using Braty.Core.Runtime.Scripts.Scene;
 using UnityEngine;
 
 namespace Demo
 {
-    public class DemoNextSceneInitializer : SceneInitializer
+    public class DemoNextSceneInitializer : MonoBehaviour
     {
-        protected override void OnAwake()
+        private void Start()
         {
             Debug.LogError(1);
         }

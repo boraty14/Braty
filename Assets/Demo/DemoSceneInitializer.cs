@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Demo
 {
-    public class DemoSceneInitializer : SceneInitializer
+    public class DemoSceneInitializer : MonoBehaviour
     {
-        protected override void OnAwake()
+        private void Start()
         {
             MonoManager.Init();
             SceneLoader.Init();

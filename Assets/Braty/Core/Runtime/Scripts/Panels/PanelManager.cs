@@ -56,23 +56,21 @@ namespace Braty.Core.Runtime.Scripts.Panels
         internal static void AddPanel<T>(T panel) where T : PanelBase
         {
             var panelKey = typeof(T);
-            if (_panels.ContainsKey(panelKey))
+            if (!_panels.TryAdd(panelKey, panel))
             {
                 Debug.LogError($"Panel {panelKey} is already loaded");
                 return;
             }
 
-            _panels.Add(panelKey, panel);
             HidePanel<T>();
         }
 
         internal static void RemovePanel<T>(T panel) where T : PanelBase
         {
             var panelKey = typeof(T);
-            if (!_panels.Remove(panelKey, out var panelObject))
+            if (!_panels.Remove(panelKey))
             {
                 Debug.LogError($"Panel {panelKey} is not loaded can't unload");
-                return;
             }
         }
     }
