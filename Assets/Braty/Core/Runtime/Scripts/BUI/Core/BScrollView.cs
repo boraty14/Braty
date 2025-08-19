@@ -71,7 +71,7 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             }
             
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position - scrollAreaOffset, transform.position + scrollAreaOffset);
+            Gizmos.DrawLine(_scrollArea.ScrollPosition - scrollAreaOffset, _scrollArea.ScrollPosition + scrollAreaOffset);
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(transform.position - scrollViewOffset, transform.position + scrollViewOffset);
         }

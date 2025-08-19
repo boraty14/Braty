@@ -1,12 +1,14 @@
 using System.Collections.Generic;
+using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     [RequireComponent(typeof(Camera))]
+    [RequireComponent(typeof(BResolutionListener))]
     [DisallowMultipleComponent]
-    public class BCamera : MonoBehaviour
+    public class BCameraSystem : MonoSystem
     {
         private Camera _uiCamera;
         private readonly RaycastHit2D[] _hitResults = new RaycastHit2D[50];
@@ -20,8 +22,9 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 
         private Vector2Int _screenSize;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _uiCamera = GetComponent<Camera>();
             _layerMask = LayerMask.GetMask(BConstants.UILayerName);
             if (_layerMask == 0)

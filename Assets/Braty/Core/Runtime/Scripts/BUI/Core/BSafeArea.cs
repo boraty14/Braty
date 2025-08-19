@@ -1,3 +1,4 @@
+using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.BUI.Core
@@ -5,7 +6,6 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
     [DisallowMultipleComponent]
     public class BSafeArea : MonoBehaviour
     {
-        [SerializeField] private BCamera _bCamera;
         public bool ApplySafeAreaX;
         public bool ApplySafeAreaY;
         
@@ -17,14 +17,14 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             ApplySafeArea();
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            if (Screen.safeArea != _safeArea
-                || Screen.width != _screenSize.x
-                || Screen.height != _screenSize.y)
-            {
-                ApplySafeArea();
-            }
+            BResolutionListener.OnResolutionChanged += ApplySafeArea;
+        }
+
+        private void OnDisable()
+        {
+            BResolutionListener.OnResolutionChanged -= ApplySafeArea;
         }
 
         private void ApplySafeArea()
@@ -32,7 +32,7 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             _screenSize = new Vector2Int(Screen.width, Screen.height);
             _safeArea = Screen.safeArea;
 
-            var cameraVerticalSize = _bCamera.VerticalSize;
+            var cameraVerticalSize = MonoManager.GetSystem<BCameraSystem>() .VerticalSize;
 
             float rawWidth = cameraVerticalSize * ((float)_screenSize.x / _screenSize.y) * 2f;
             float rawHeight = cameraVerticalSize * 2f;

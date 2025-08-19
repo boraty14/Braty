@@ -2,9 +2,11 @@ using UnityEngine;
 
 namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
+    [DisallowMultipleComponent]
     public class BScrollArea : MonoBehaviour
     {
         public float Size;
+        public Vector3 ScrollPosition => transform.localPosition;
 
         private void Awake()
         {
