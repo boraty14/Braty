@@ -1,122 +1,79 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
-    [RequireComponent(typeof(RectTransform))]
-    public abstract class BScrollView<TScrollItem, TScrollItemView> : BInteractable where TScrollItem : BScrollItem
-        where TScrollItemView : BScrollItemView<TScrollItem>
+    public class BScrollView : BInteractable
     {
-        [SerializeField] private BScrollDirection _scrollDirection = BScrollDirection.Vertical;
-        [SerializeField] private SpriteMask _spriteMask;
-        [SerializeField] private TScrollItemView _scrolItemViewPrefab;
+        public float Size;
+        [SerializeField] private BScrollArea _scrollArea;
+        [SerializeField] private BScrollDirection _scrollDirection;
+        
+        private Vector2 _lastMousePosition;
+        private bool _isMouseDown;
+        private BScrollDirection _initScrollDirection;
 
-        public SpriteMask SpriteMask => _spriteMask;
-        public BScrollDirection ScrollDirection => _scrollDirection;
-
-        private readonly List<TScrollItem> _scrollItems = new();
-        private RectTransform _rectTransform;
-        private ObjectPool<TScrollItemView> _scrollItemPool;
-
-        private readonly List<TScrollItemView> _activeScrollItemViews = new();
-
-        protected virtual void Awake()
+        private void Awake()
         {
-            _rectTransform = GetComponent<RectTransform>();
-            InitPool();
+            _initScrollDirection = _scrollDirection;
         }
 
-        protected override void Start()
+        public override void MouseDownEvent(Vector2 mousePosition)
         {
-            base.Start();
-            RefreshView();
+            base.MouseDownEvent(mousePosition);
+            _lastMousePosition = mousePosition;
         }
 
-        public void GoToIndex(int index)
+        public override void MouseDragEvent(Vector2 mousePosition)
         {
-            if (index < 0 || index >= _scrollItems.Count) return;
+            base.MouseDragEvent(mousePosition);
+            var delta = mousePosition - _lastMousePosition;
+            switch (_initScrollDirection)
+            {
+                case BScrollDirection.Horizontal:
+                    _scrollArea.Move(Vector3.right * delta.x);
+                    break;
+                case BScrollDirection.Vertical:
+                    _scrollArea.Move(Vector3.up * delta.y);
+                    break;
+            }
+
+            _lastMousePosition = mousePosition;
         }
 
-        public void GoToItem(TScrollItem scrollItem)
+        public override void MouseUpEvent(Vector2 mousePosition)
         {
-            int index = _scrollItems.IndexOf(scrollItem);
-            if (index >= 0) GoToIndex(index);
+            base.MouseUpEvent(mousePosition);
+            if (!_isMouseDown) return;
+            _isMouseDown = false;
         }
-
-        public void AddItem(TScrollItem scrollItem)
+        
+        public override void MouseExitEvent(Vector2 mousePosition)
         {
-            _scrollItems.Add(scrollItem);
-            RefreshView();
+            base.MouseExitEvent(mousePosition);
+            if (!_isMouseDown) return;
+            _isMouseDown = false;
         }
-
-        public void RemoveItems(TScrollItem scrollItem)
+        
+        private void OnDrawGizmosSelected()
         {
-            _scrollItems.Remove(scrollItem);
-            RefreshView();
-        }
-
-        private void RefreshView()
-        {
-            int scrollItemCount = _scrollItems.Count;
-            int preScrollItemViewCount = _activeScrollItemViews.Count;
+            Vector3 scrollAreaOffset = Vector3.zero;
+            Vector3 scrollViewOffset = Vector3.zero;
+            switch (_scrollDirection)
+            {
+                case BScrollDirection.Horizontal:
+                    scrollAreaOffset = Vector3.right * _scrollArea.Size * 0.5f;
+                    scrollViewOffset = Vector3.right * Size * 0.5f;
+                    break;
+                case BScrollDirection.Vertical:
+                    scrollAreaOffset = Vector3.up * _scrollArea.Size * 0.5f;
+                    scrollViewOffset = Vector3.up * Size * 0.5f;
+                    break;
+            }
             
-            
-            if (scrollItemCount > preScrollItemViewCount)
-            {
-                for (int i = 0; i < scrollItemCount - preScrollItemViewCount; i++)
-                {
-                    _activeScrollItemViews.Add(GetScrollItemView());
-                }
-            }
-            else if (preScrollItemViewCount > scrollItemCount)
-            {
-                for (int i = 0; i < preScrollItemViewCount - scrollItemCount; i++)
-                {
-                    var lastActiveScrollItemView = _activeScrollItemViews[^1];
-                    _activeScrollItemViews.RemoveAt(_activeScrollItemViews.Count - 1);
-                    HideScrollItemView(lastActiveScrollItemView);
-                }
-            }
-
-            for (int i = 0; i < scrollItemCount; i++)
-            {
-                TScrollItem scrollItem = _scrollItems[i];
-            }
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position - scrollAreaOffset, transform.position + scrollAreaOffset);
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position - scrollViewOffset, transform.position + scrollViewOffset);
         }
-
-        private TScrollItemView GetScrollItemView()
-        {
-            return _scrollItemPool.Get();
-        }
-
-        private void HideScrollItemView(TScrollItemView scrollItemView)
-        {
-            scrollItemView.Hide();
-            _scrollItemPool.Release(scrollItemView);
-        }
-
-
-        private void InitPool(int initial = 10, int max = 20, bool collectionChecks = false)
-        {
-            _scrollItemPool = new ObjectPool<TScrollItemView>(
-                CreateSetup,
-                GetSetup,
-                ReleaseSetup,
-                DestroySetup,
-                collectionChecks,
-                initial,
-                max);
-        }
-
-        protected virtual TScrollItemView CreateSetup() => Instantiate(_scrolItemViewPrefab);
-        protected virtual void GetSetup(TScrollItemView obj) => obj.gameObject.SetActive(true);
-        protected virtual void ReleaseSetup(TScrollItemView obj) => obj.gameObject.SetActive(false);
-        protected virtual void DestroySetup(TScrollItemView obj) => Destroy(obj);
-
-        public TScrollItemView Get() => _scrollItemPool.Get();
-        public void Release(TScrollItemView obj) => _scrollItemPool.Release(obj);
     }
 }
