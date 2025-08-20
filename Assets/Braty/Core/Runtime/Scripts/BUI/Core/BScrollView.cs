@@ -9,7 +9,6 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
         [SerializeField] private BScrollDirection _scrollDirection;
         
         private Vector2 _lastMousePosition;
-        private bool _isMouseDown;
         private BScrollDirection _initScrollDirection;
 
         private void Awake()
@@ -38,20 +37,6 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             }
 
             _lastMousePosition = mousePosition;
-        }
-
-        public override void MouseUpEvent(Vector2 mousePosition)
-        {
-            base.MouseUpEvent(mousePosition);
-            if (!_isMouseDown) return;
-            _isMouseDown = false;
-        }
-        
-        public override void MouseExitEvent(Vector2 mousePosition)
-        {
-            base.MouseExitEvent(mousePosition);
-            if (!_isMouseDown) return;
-            _isMouseDown = false;
         }
         
         private void OnDrawGizmosSelected()
