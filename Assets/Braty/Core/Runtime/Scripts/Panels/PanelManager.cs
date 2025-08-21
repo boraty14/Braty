@@ -7,7 +7,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
     public static class PanelManager
     {
         private static readonly Dictionary<Type, PanelBase> _panels = new();
-        private const float ShowZOffset = 0.1f;
+        private const float ShowZOffset = -0.1f;
         private static int _showIndex;
 
         public static void Init()
@@ -16,7 +16,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
             _showIndex = 0;
         }
 
-        public static void ShowPanel<T>(bool isSafeArea) where T : PanelBase
+        public static void ShowPanel<T>() where T : PanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.ContainsKey(panelKey))
@@ -72,6 +72,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
                 return;
             }
 
+            ShowPanel<T>();
             HidePanel<T>();
         }
 
