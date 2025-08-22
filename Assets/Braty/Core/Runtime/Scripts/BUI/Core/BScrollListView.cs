@@ -17,6 +17,7 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 
         [Header("Scroll Settings")]
         [SerializeField] private float _size;
+        [SerializeField] private float _otherAxisSize;
         [SerializeField] private BScrollDirection _scrollDirection;
         [SerializeField] private TScrollListItemView _scrollListItemViewPrefab;
         [SerializeField] private float _startPadding;
@@ -145,14 +146,6 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 
         private void SetReferences()
         {
-            int sortingLayerId = SortingLayer.NameToID(BConstants.UISortingLayerName);
-            _spriteMask.isCustomRangeActive = true;
-            _spriteMask.frontSortingOrder = 0;
-            _spriteMask.backSortingOrder = -1;
-            _spriteMask.frontSortingLayerID = sortingLayerId;
-            _spriteMask.backSortingLayerID = sortingLayerId;
-            _spriteRenderer.sortingOrder = 0;
-            _spriteRenderer.sortingLayerID = sortingLayerId;
             _spriteRenderer.drawMode = SpriteDrawMode.Sliced;
 
             var boxCollider = GetComponent<BoxCollider2D>();
@@ -162,15 +155,15 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
                     _spriteRenderer.transform.localPosition =
                         new Vector3(Size * 0.5f, 0f, _spriteRenderer.transform.localPosition.z);
                     boxCollider.offset = new Vector2(Size * 0.5f, 0f);
-                    _spriteRenderer.size = new Vector2(Size, boxCollider.size.y);
-                    boxCollider.size = new Vector2(Size, boxCollider.size.y);
+                    _spriteRenderer.size = new Vector2(Size, _otherAxisSize);
+                    boxCollider.size = new Vector2(Size, _otherAxisSize);
                     break;
                 case BScrollDirection.Vertical:
                     _spriteRenderer.transform.localPosition =
                         new Vector3(0f, Size * 0.5f, _spriteRenderer.transform.localPosition.z);
                     boxCollider.offset = new Vector2(0f, Size * 0.5f);
-                    _spriteRenderer.size = new Vector2(boxCollider.size.x, Size);
-                    boxCollider.size = new Vector2(boxCollider.size.x, Size);
+                    _spriteRenderer.size = new Vector2(_otherAxisSize, Size);
+                    boxCollider.size = new Vector2(_otherAxisSize, Size);
                     break;
             }
         }
@@ -203,7 +196,7 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
         public override void MouseDragEvent(Vector2 mousePosition)
         {
             base.MouseDragEvent(mousePosition);
-            if (_isInputBlocked) return;
+            if (_isInputBlocked || !_isMouseDown) return;
 
             Vector2 deltaVector = _lastMousePosition - mousePosition;
             float deltaAmount = 0f;
@@ -234,7 +227,6 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 
         private void RenderScrollList()
         {
-            Debug.LogError("sa");
             // clear if no elements
             if (_items.Count == 0)
             {
@@ -263,7 +255,6 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             int itemViewCount = 1;
             while (currentItemViewEndPosition < _currentScrollDelta + _size && currentItemIndex < _items.Count - 1)
             {
-                Debug.LogError(currentItemIndex);
                 currentItemIndex++;
                 itemViewCount++;
                 currentItemViewEndPosition += _items[currentItemIndex].Size;
@@ -316,7 +307,7 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             return total;
         }
 
-        private TScrollListItemView CreateSetup() => Instantiate(_scrollListItemViewPrefab);
+        private TScrollListItemView CreateSetup() => Instantiate(_scrollListItemViewPrefab, transform);
         private void GetSetup(TScrollListItemView obj) => obj.gameObject.SetActive(true);
         private void ReleaseSetup(TScrollListItemView obj) => obj.gameObject.SetActive(false);
         private void DestroySetup(TScrollListItemView obj) => Destroy(obj);

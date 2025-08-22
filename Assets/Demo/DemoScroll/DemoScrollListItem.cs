@@ -4,8 +4,11 @@ namespace Demo.DemoScroll
 {
     public class DemoScrollListItem : BScrollListItem
     {
-        public DemoScrollListItem(float size) : base(size)
+        public readonly int Count;
+        
+        public DemoScrollListItem(float size, int count) : base(size)
         {
+            Count = count;
         }
     }
 }

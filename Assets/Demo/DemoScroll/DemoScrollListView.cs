@@ -7,9 +7,10 @@ namespace Demo.DemoScroll
         protected override void Start()
         {
             base.Start();
-            AddItem(new DemoScrollListItem(2));
-            AddItem(new DemoScrollListItem(2));
-            AddItem(new DemoScrollListItem(2));
+            for (int i = 0; i < 9; i++)
+            {
+                AddItem(new DemoScrollListItem(2,i+1));
+            }
         }
     }
 }

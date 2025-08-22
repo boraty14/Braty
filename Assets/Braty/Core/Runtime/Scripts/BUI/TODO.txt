@@ -1,6 +1,7 @@
 add menu options for bui components
 
 HANDLE Z SYSTEM ?? WHAT TO DO?
+Handle input and canvas register system.
 make show index configurable???
 handle also prio?
 
