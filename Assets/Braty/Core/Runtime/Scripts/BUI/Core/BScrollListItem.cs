@@ -2,6 +2,11 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     public abstract class BScrollListItem
     {
-        public float Size;
+        public readonly float Size;
+
+        protected BScrollListItem(float size)
+        {
+            Size = size;
+        }
     }
 }

@@ -1,15 +1,20 @@
-using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using PrimeTween;
 using UnityEngine;
 using UnityEngine.Pool;
 
 namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
+    [RequireComponent(typeof(BoxCollider2D))]
     public abstract class BScrollListView<TScrollListItem, TScrollListItemView> : BInteractable
         where TScrollListItem : BScrollListItem
         where TScrollListItemView : BScrollListItemView<TScrollListItem>
     {
+        [Header("Scroll References")]
+        [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private SpriteMask _spriteMask;
+
         [Header("Scroll Settings")]
         [SerializeField] private float _size;
         [SerializeField] private BScrollDirection _scrollDirection;
@@ -22,6 +27,9 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
         [SerializeField] private int _defaultCapacity = 10;
         [SerializeField] private int _maxCapacity = 100;
 
+        public float Size => _size;
+        public BScrollDirection ScrollDirection => _scrollDirection;
+
         private Vector2 _lastMousePosition;
         private ObjectPool<TScrollListItemView> _scrollListItemViewPool;
         private List<TScrollListItem> _items;
@@ -33,6 +41,38 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 
         private float AbstractSize => _startPadding + _endPadding + GetAllItemsTotalSize();
         private float AbstractScrollableSize => AbstractSize - _size;
+
+        public void AddItem(TScrollListItem item)
+        {
+            _items.Add(item);
+            RenderScrollList();
+        }
+
+        public void RemoveItem(TScrollListItem item)
+        {
+            _items.Remove(item);
+            RenderScrollList();
+        }
+
+        public void RemoveAt(int index)
+        {
+            if (index < 0 || index >= _items.Count) return;
+            _items.RemoveAt(index);
+            RenderScrollList();
+        }
+
+        public void RemoveRange(int index, int count)
+        {
+            if (index < 0 || index + count > _items.Count) return;
+            _items.RemoveRange(index, count);
+            RenderScrollList();
+        }
+
+        public void ClearItems()
+        {
+            _items.Clear();
+            RenderScrollList();
+        }
 
         public void ScrollToElement(int index, float viewRatio)
         {
@@ -53,12 +93,37 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             viewRatio = Mathf.Clamp01(viewRatio);
             _currentScrollDelta = Mathf.Lerp(0f, AbstractScrollableSize, scrollRatio);
             _currentScrollDelta += Mathf.Lerp(0f, _size, viewRatio);
-            Render();
+            RenderScrollList();
         }
 
-        public async UniTask ScrollToWithDuration(float scrollRatio, float viewRatio, float duration)
+        public async UniTask ScrollToElementWithDuration(int index, float viewRatio, float duration,
+            Ease ease = Ease.Linear)
         {
-            
+            index = Mathf.Clamp(index, 0, _items.Count - 1);
+            float totalSize = _startPadding;
+            for (int i = 0; i < index; i++)
+            {
+                totalSize += _items[i].Size;
+            }
+
+            float scrollRatio = totalSize / AbstractScrollableSize;
+            await ScrollToWithDuration(scrollRatio, viewRatio, duration, ease);
+        }
+
+        public async UniTask ScrollToWithDuration(float scrollRatio, float viewRatio, float duration,
+            Ease ease = Ease.Linear)
+        {
+            scrollRatio = Mathf.Clamp01(scrollRatio);
+            viewRatio = Mathf.Clamp01(viewRatio);
+            _isInputBlocked = true;
+            float startScrollDelta = _currentScrollDelta;
+            float targetScrollDelta = (scrollRatio * AbstractScrollableSize) + Mathf.Lerp(0f, _size, viewRatio);
+            await Tween.Custom(startScrollDelta, targetScrollDelta, duration, newScrollDelta =>
+                {
+                    _currentScrollDelta = newScrollDelta;
+                    RenderScrollList();
+                }, ease: ease).ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy())
+                .SuppressCancellationThrow();
         }
 
         private void Awake()
@@ -74,7 +139,40 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
                 _collectionCheck,
                 _defaultCapacity,
                 _maxCapacity);
-            Render();
+            SetReferences();
+            RenderScrollList();
+        }
+
+        private void SetReferences()
+        {
+            int sortingLayerId = SortingLayer.NameToID(BConstants.UISortingLayerName);
+            _spriteMask.isCustomRangeActive = true;
+            _spriteMask.frontSortingOrder = 0;
+            _spriteMask.backSortingOrder = -1;
+            _spriteMask.frontSortingLayerID = sortingLayerId;
+            _spriteMask.backSortingLayerID = sortingLayerId;
+            _spriteRenderer.sortingOrder = 0;
+            _spriteRenderer.sortingLayerID = sortingLayerId;
+            _spriteRenderer.drawMode = SpriteDrawMode.Sliced;
+
+            var boxCollider = GetComponent<BoxCollider2D>();
+            switch (ScrollDirection)
+            {
+                case BScrollDirection.Horizontal:
+                    _spriteRenderer.transform.localPosition =
+                        new Vector3(Size * 0.5f, 0f, _spriteRenderer.transform.localPosition.z);
+                    boxCollider.offset = new Vector2(Size * 0.5f, 0f);
+                    _spriteRenderer.size = new Vector2(Size, boxCollider.size.y);
+                    boxCollider.size = new Vector2(Size, boxCollider.size.y);
+                    break;
+                case BScrollDirection.Vertical:
+                    _spriteRenderer.transform.localPosition =
+                        new Vector3(0f, Size * 0.5f, _spriteRenderer.transform.localPosition.z);
+                    boxCollider.offset = new Vector2(0f, Size * 0.5f);
+                    _spriteRenderer.size = new Vector2(boxCollider.size.x, Size);
+                    boxCollider.size = new Vector2(boxCollider.size.x, Size);
+                    break;
+            }
         }
 
         private void Update()
@@ -86,6 +184,7 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
         public override void MouseDownEvent(Vector2 mousePosition)
         {
             base.MouseDownEvent(mousePosition);
+            _lastMousePosition = mousePosition;
             _isMouseDown = true;
         }
 
@@ -104,9 +203,9 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
         public override void MouseDragEvent(Vector2 mousePosition)
         {
             base.MouseDragEvent(mousePosition);
-            if(_isInputBlocked) return;
-            
-            Vector2 deltaVector = mousePosition - _lastMousePosition;
+            if (_isInputBlocked) return;
+
+            Vector2 deltaVector = _lastMousePosition - mousePosition;
             float deltaAmount = 0f;
             switch (_scrollDirection)
             {
@@ -128,17 +227,24 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             }
 
             _currentScrollDelta += deltaAmount;
-            Render();
+            RenderScrollList();
 
             _lastMousePosition = mousePosition;
         }
 
-        private void Render()
+        private void RenderScrollList()
         {
-            float currentItemViewEndPosition = _startPadding;
-            int currentItemIndex = 0;
+            Debug.LogError("sa");
+            // clear if no elements
+            if (_items.Count == 0)
+            {
+                ReleaseItemViews(0);
+                return;
+            }
 
             // get starting item index
+            float currentItemViewEndPosition = _startPadding;
+            int currentItemIndex = 0;
             for (int i = 0; i < _items.Count; i++)
             {
                 currentItemIndex = i;
@@ -155,8 +261,9 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 
             // render rest
             int itemViewCount = 1;
-            while (currentItemViewEndPosition < _currentScrollDelta + _size)
+            while (currentItemViewEndPosition < _currentScrollDelta + _size && currentItemIndex < _items.Count - 1)
             {
+                Debug.LogError(currentItemIndex);
                 currentItemIndex++;
                 itemViewCount++;
                 currentItemViewEndPosition += _items[currentItemIndex].Size;
@@ -175,7 +282,6 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             var scrollListItemView = _scrollListItemViewPool.Get();
             _activeItemViews.Add(scrollListItemView);
             return scrollListItemView;
-
         }
 
         private Vector2 GetItemViewPosition(float position)
@@ -215,12 +321,6 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
         private void ReleaseSetup(TScrollListItemView obj) => obj.gameObject.SetActive(false);
         private void DestroySetup(TScrollListItemView obj) => Destroy(obj);
 
-        private void Release(TScrollListItemView scrollListItemView)
-        {
-            _activeItemViews.Remove(scrollListItemView);
-            _scrollListItemViewPool.Release(scrollListItemView);
-        }
-
         private void OnDrawGizmosSelected()
         {
             Vector3 scrollAreaOffset = Vector3.zero;
@@ -228,15 +328,15 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
             switch (_scrollDirection)
             {
                 case BScrollDirection.Horizontal:
-                    scrollViewOffset = Vector3.right * _size * 0.5f;
+                    scrollViewOffset = Vector3.right * _size * transform.localScale.x;
                     break;
                 case BScrollDirection.Vertical:
-                    scrollViewOffset = Vector3.up * _size * 0.5f;
+                    scrollViewOffset = Vector3.up * _size * transform.localScale.y;
                     break;
             }
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(transform.position - scrollViewOffset, transform.position + scrollViewOffset);
+            Gizmos.DrawLine(transform.position, transform.position + scrollViewOffset);
         }
     }
 }
