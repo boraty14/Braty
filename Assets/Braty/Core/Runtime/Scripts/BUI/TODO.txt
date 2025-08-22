@@ -1,3 +1,8 @@
 add scroll pool
+make show index configurable???
+handle also prio?
+
+add scroll to variations (also to scroll view)
 
 fix feeling for button/scroll on top of each other, make it natural
+add inertia

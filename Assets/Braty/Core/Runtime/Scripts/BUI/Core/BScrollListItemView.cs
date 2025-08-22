@@ -4,6 +4,11 @@ namespace Braty.Core.Runtime.Scripts.BUI.Core
 {
     public abstract class BScrollListItemView<T> : MonoBehaviour where T : BScrollListItem
     {
-        
+        public virtual void Render(T item, Vector2 position)
+        {
+            gameObject.SetActive(true);
+            transform.localPosition = new Vector3(position.y, position.y, transform.localPosition.z);
+        }
+
     }
 }
