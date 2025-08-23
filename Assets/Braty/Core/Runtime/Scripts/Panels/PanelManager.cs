@@ -7,13 +7,10 @@ namespace Braty.Core.Runtime.Scripts.Panels
     public static class PanelManager
     {
         private static readonly Dictionary<Type, PanelBase> _panels = new();
-        private const float ShowZOffset = -0.1f;
-        private static int _showIndex;
 
         public static void Init()
         {
             _panels.Clear();
-            _showIndex = 0;
         }
 
         public static void ShowPanel<T>() where T : PanelBase
@@ -27,9 +24,6 @@ namespace Braty.Core.Runtime.Scripts.Panels
 
             var panel = GetPanel<T>();
             panel.gameObject.SetActive(true);
-            _showIndex++;
-            panel.transform.localPosition = new Vector3(panel.transform.localPosition.x,
-                panel.transform.localPosition.y, _showIndex * ShowZOffset);
         }
 
         public static void HidePanel<T>() where T : PanelBase
@@ -43,7 +37,6 @@ namespace Braty.Core.Runtime.Scripts.Panels
 
             var panel = GetPanel<T>();
             panel.gameObject.SetActive(false);
-            _showIndex--;
         }
 
         public static T GetPanel<T>()
@@ -72,7 +65,6 @@ namespace Braty.Core.Runtime.Scripts.Panels
                 return;
             }
 
-            ShowPanel<T>();
             HidePanel<T>();
         }
 

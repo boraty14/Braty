@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Braty.Core.Runtime.Scripts.BUI.Core
+namespace Braty.Core.Runtime.Scripts.BUI
 {
     public class BRightClickable : BInteractable
     {

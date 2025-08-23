@@ -3,7 +3,7 @@ using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Braty.Core.Runtime.Scripts.BUI.Core
+namespace Braty.Core.Runtime.Scripts.BUI
 {
     [RequireComponent(typeof(Camera))]
     [RequireComponent(typeof(BResolutionListener))]

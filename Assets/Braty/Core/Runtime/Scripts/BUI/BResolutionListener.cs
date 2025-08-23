@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Braty.Core.Runtime.Scripts.BUI.Core
+namespace Braty.Core.Runtime.Scripts.BUI
 {
     [DisallowMultipleComponent]
     public class BResolutionListener : MonoBehaviour

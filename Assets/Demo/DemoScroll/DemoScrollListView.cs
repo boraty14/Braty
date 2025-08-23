@@ -1,4 +1,5 @@
-using Braty.Core.Runtime.Scripts.BUI.Core;
+using Braty.Core.Runtime.Scripts.BUI;
+using UnityEngine;
 
 namespace Demo.DemoScroll
 {
@@ -9,7 +10,7 @@ namespace Demo.DemoScroll
             base.Start();
             for (int i = 0; i < 9; i++)
             {
-                AddItem(new DemoScrollListItem(2,i+1));
+                AddItem(new DemoScrollListItem(Random.Range(1,3),i+1));
             }
         }
     }

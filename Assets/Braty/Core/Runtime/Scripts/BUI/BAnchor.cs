@@ -1,7 +1,7 @@
 using Braty.Core.Runtime.Scripts.MonoEcs;
 using UnityEngine;
 
-namespace Braty.Core.Runtime.Scripts.BUI.Core
+namespace Braty.Core.Runtime.Scripts.BUI
 {
     public class BAnchor : MonoBehaviour
     {

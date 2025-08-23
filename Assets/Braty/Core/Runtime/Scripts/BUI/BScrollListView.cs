@@ -4,7 +4,7 @@ using PrimeTween;
 using UnityEngine;
 using UnityEngine.Pool;
 
-namespace Braty.Core.Runtime.Scripts.BUI.Core
+namespace Braty.Core.Runtime.Scripts.BUI
 {
     [RequireComponent(typeof(BoxCollider2D))]
     public abstract class BScrollListView<TScrollListItem, TScrollListItemView> : BInteractable

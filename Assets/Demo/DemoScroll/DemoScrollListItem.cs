@@ -1,4 +1,4 @@
-using Braty.Core.Runtime.Scripts.BUI.Core;
+using Braty.Core.Runtime.Scripts.BUI;
 
 namespace Demo.DemoScroll
 {

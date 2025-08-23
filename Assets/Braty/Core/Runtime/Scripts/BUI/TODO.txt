@@ -1,6 +1,8 @@
 add menu options for bui components
 
-HANDLE Z SYSTEM ?? WHAT TO DO?
+HANDLE Z SYSTEM ?? WHAT TO DO? => sorting order, have a global system and offsets)
+both for prio and sort order?
+
 Handle input and canvas register system.
 make show index configurable???
 handle also prio?
