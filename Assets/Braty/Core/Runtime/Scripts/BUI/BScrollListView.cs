@@ -261,7 +261,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
                 var currentItemView = GetItemView(itemViewCount - 1);
                 var currentItem = _items[currentItemIndex];
                 currentItemView.Render(currentItem,
-                    GetItemViewPosition((currentItemViewEndPosition - _currentScrollDelta) - firstItem.Size * 0.5f));
+                    GetItemViewPosition((currentItemViewEndPosition - _currentScrollDelta) - currentItem.Size * 0.5f));
             }
 
             ReleaseItemViews(itemViewCount);
