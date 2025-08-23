@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using PrimeTween;
@@ -314,7 +315,6 @@ namespace Braty.Core.Runtime.Scripts.BUI
 
         private void OnDrawGizmosSelected()
         {
-            Vector3 scrollAreaOffset = Vector3.zero;
             Vector3 scrollViewOffset = Vector3.zero;
             switch (_scrollDirection)
             {

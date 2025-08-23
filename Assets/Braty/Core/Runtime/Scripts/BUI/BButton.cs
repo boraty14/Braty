@@ -43,6 +43,7 @@ namespace Braty.Core.Runtime.Scripts.BUI
             if (Time.time - _mouseDownTime > ClickDurationThreshold ||
                 Vector2.Distance(_mouseDownPosition, mousePosition) > ClickDeltaThreshold) return;
 
+            Debug.Log("clciked");
             OnClick?.Invoke();
         }
 

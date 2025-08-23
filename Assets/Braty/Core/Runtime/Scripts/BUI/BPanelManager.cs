@@ -2,18 +2,18 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Braty.Core.Runtime.Scripts.Panels
+namespace Braty.Core.Runtime.Scripts.BUI
 {
-    public static class PanelManager
+    public static class BPanelManager
     {
-        private static readonly Dictionary<Type, PanelBase> _panels = new();
+        private static readonly Dictionary<Type, BPanelBase> _panels = new();
 
         public static void Init()
         {
             _panels.Clear();
         }
 
-        public static void ShowPanel<T>() where T : PanelBase
+        public static void ShowPanel<T>() where T : BPanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.ContainsKey(panelKey))
@@ -26,7 +26,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
             panel.gameObject.SetActive(true);
         }
 
-        public static void HidePanel<T>() where T : PanelBase
+        public static void HidePanel<T>() where T : BPanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.ContainsKey(panelKey))
@@ -56,7 +56,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
             return _panels.ContainsKey(panelKey);
         }
 
-        internal static void AddPanel<T>(T panel) where T : PanelBase
+        internal static void AddPanel<T>(T panel) where T : BPanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.TryAdd(panelKey, panel))
@@ -68,7 +68,7 @@ namespace Braty.Core.Runtime.Scripts.Panels
             HidePanel<T>();
         }
 
-        internal static void RemovePanel<T>(T panel) where T : PanelBase
+        internal static void RemovePanel<T>(T panel) where T : BPanelBase
         {
             var panelKey = typeof(T);
             if (!_panels.Remove(panelKey))
