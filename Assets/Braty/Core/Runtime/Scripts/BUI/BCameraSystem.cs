@@ -10,10 +10,10 @@ namespace Braty.Core.Runtime.Scripts.BUI
     [DisallowMultipleComponent]
     public class BCameraSystem : MonoSystem
     {
+        [SerializeField] private LayerMask _layerMask;
         private Camera _uiCamera;
         private readonly RaycastHit2D[] _hitResults = new RaycastHit2D[50];
         private readonly List<BInteractable> _currentInteractables = new();
-        private int _layerMask;
 
         private readonly List<BInteractable> _currentHovers = new();
         private readonly Stack<BInteractable> _currentHoversRemoveStack = new();
@@ -26,11 +26,6 @@ namespace Braty.Core.Runtime.Scripts.BUI
         {
             base.Awake();
             _uiCamera = GetComponent<Camera>();
-            _layerMask = LayerMask.GetMask(BConstants.UILayerName);
-            if (_layerMask == 0)
-            {
-                Debug.LogWarning("Layer 'BUI' not found. Please create it in the Layers dropdown.");
-            }
         }
 
         private void Update()
