@@ -1,5 +1,1 @@
-add menu options for bui components
-
-Handle input and canvas register system.
-
 add inertia
